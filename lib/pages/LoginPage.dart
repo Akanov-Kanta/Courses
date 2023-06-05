@@ -1,4 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:courses/pages/DeveloperPage.dart';
 import 'package:flutter/material.dart';
+
+import '../AlertDialogCustom.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -36,13 +40,17 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Container(
-                width: 300,
+                width: double.infinity,
                 height: 230,
-                decoration: BoxDecoration(
-                  color: Colors.white
+                child: Container(
+                  width: 300,
+                  height: 230,
+                  decoration: BoxDecoration(
+                    color: Colors.white
+                  ),
+                  child: Image.asset('images/Illustration.png',
+                    fit: BoxFit.contain,) ,
                 ),
-                child: Image.asset('images/Illustration.png',
-                  fit: BoxFit.contain,) ,
               ),
 
               Column(
@@ -167,9 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       width: 450,
                       height: 50,
-
                       child: TextFormField(
-
                         autofocus: true,
                         controller: passwordcontroller,
                         textCapitalization: TextCapitalization.none,
@@ -200,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red,
-                              width: 2,
+                              width: 1,
                             ),
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -237,10 +243,19 @@ class _LoginPageState extends State<LoginPage> {
                     width: 300,
                     child: ElevatedButton(
                       onPressed: () {
-                        print('Button pressed ');
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.success,
+                          animType: AnimType.bottomSlide,
+                          showCloseIcon: false,
+                          title: 'Успешно!',
+                          desc: 'Вы успешно записались на курс!!',
+                          width: 500,
+                          btnOkText: 'Хорошо',
+                          btnOkOnPress: (){},
+                        ).show();
                       },
                       style: ElevatedButton.styleFrom(
-
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         primary: Color(0xFF4838D1), // Replace with your desired button color
                         elevation: 3,
@@ -271,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 40,
               ),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 25.0),
+                padding: EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
                   children: [
                     Expanded(
@@ -281,25 +296,31 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     Padding(
-                      padding:  EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
                       child: SizedBox(
                         width: MediaQuery.of(context).size.shortestSide / 1.5,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              child: Text('❤',
-                            style: TextStyle(color: Colors.grey[700]),),
-                              onTap: (){
-                                print('object');
+                              child: Text(
+                                '❤',
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
+                              onTap: () {
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> DeveloperPage()));
                               },
                             ),
-                            Text(
-                              'Если вы не знаете свои данные, то обратитесть к куратору❤',
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.grey[700]),
+                            Flexible(
+                              child: Text(
+                                'Если вы не знаете свои данные, то обратитесть к куратору',
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
                             ),
+                            Text('❤',
+                                style: TextStyle(color: Colors.grey[700]))
                           ],
                         ),
                       ),
