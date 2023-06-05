@@ -45,20 +45,25 @@ class _LoginPageState extends State<LoginPage> {
                   fit: BoxFit.contain,) ,
               ),
           SizedBox(height: 30,),
-          Text(
-            'NISCOURSES',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 35,
-            ),
-          ),
-              Align(
-                alignment: AlignmentDirectional(0.05, 0),
-                child: Text(
-                  'Добро пожаловать на NISCourses,\nсистему записи на курсы',
-                  textAlign: TextAlign.center,
-                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'NIScourses',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontFamily: 'Poppins',
+                      fontSize: 40,
+                    ),
+                  ),
+
+                  Text(
+                    'Добро пожаловать на NISCourses,\nсистему записи на курсы',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
+              SizedBox(height: 10,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -223,19 +228,15 @@ class _LoginPageState extends State<LoginPage> {
                   padding: EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
                   child: ElevatedButton(
                     onPressed: () {
-                      print('Button pressed ...');
+                      print('Button pressed ');
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(197, 46),
                       padding: EdgeInsets.symmetric(horizontal: 24),
-                      primary: Colors.blue, // Replace with your desired button color
+                      primary: Color(0xFF4838D1), // Replace with your desired button color
                       elevation: 3,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                          color: Colors.blue, // Replace with your desired border color
-                          width: 1,
-                        ),
                       ),
                     ),
                     child: Text(
@@ -264,9 +265,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Padding(
                       padding:  EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text(
-                        'Если вы не знаете свои данные, то обратитесть к куратору',
-                        style: TextStyle(color: Colors.grey[700]),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width / 1.5,
+                        child: Text(
+                          'Если вы не знаете свои данные, то обратитесть к куратору',
+                          softWrap: true,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
                       ),
                     ),
                     Expanded(
