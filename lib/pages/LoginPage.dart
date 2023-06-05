@@ -37,21 +37,21 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Container(
                 width: 300,
-                height: 200,
+                height: 230,
                 decoration: BoxDecoration(
                   color: Colors.white
                 ),
                 child: Image.asset('images/Illustration.png',
                   fit: BoxFit.contain,) ,
               ),
-          SizedBox(height: 30,),
+
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   Text(
                     'NIScourses',
                     style: TextStyle(
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w900,
                       fontFamily: 'Poppins',
                       fontSize: 40,
                     ),
@@ -83,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
                     child: Container(
+
                       width: 450,
                       height: 50,
                       child: TextFormField(
@@ -91,6 +92,8 @@ class _LoginPageState extends State<LoginPage> {
                         textCapitalization: TextCapitalization.none,
                         obscureText: false,
                         decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Color.fromRGBO(46, 46, 93, 0.04),
                           labelText: 'Ваша почта',
                           labelStyle: TextStyle(
                             fontFamily: 'Poppins',
@@ -99,31 +102,31 @@ class _LoginPageState extends State<LoginPage> {
                           hintText: 'Введите школьную почту',
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.black,
+                              color: Colors.grey,
                               width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.black,
-                              width: 2,
+                              width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red,
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red,
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                         ),
                         style: TextStyle(
@@ -164,12 +167,16 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       width: 450,
                       height: 50,
+
                       child: TextFormField(
+
                         autofocus: true,
                         controller: passwordcontroller,
                         textCapitalization: TextCapitalization.none,
                         obscureText: false,
                         decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Color.fromRGBO(46, 46, 93, 0.04),
                           labelText: 'Ваш пароль',
                           labelStyle: TextStyle(
                             fontFamily: 'Poppins',
@@ -178,31 +185,31 @@ class _LoginPageState extends State<LoginPage> {
                           hintText: 'Введите пароль',
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.black,
+                              color: Colors.grey,
                               width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.black,
-                              width: 2,
+                              width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red,
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.red,
                               width: 2,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                         ),
                         style: TextStyle(
@@ -221,30 +228,34 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 20,),
               Align(
                 alignment: AlignmentDirectional(0, 0),
                 child: Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      print('Button pressed ');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(197, 46),
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      primary: Color(0xFF4838D1), // Replace with your desired button color
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: SizedBox(
+                    height: 50,
+                    width: 300,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        print('Button pressed ');
+                      },
+                      style: ElevatedButton.styleFrom(
+
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        primary: Color(0xFF4838D1), // Replace with your desired button color
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      'Войти в аккаунт',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.white,
-                        fontSize: 17,
+                      child: Text(
+                        'Войти в аккаунт',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: Colors.white,
+                          fontSize: 17,
+
+                        ),
                       ),
                     ),
                   ),
