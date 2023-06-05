@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: EdgeInsets.only(left: 8),
                     child: Text(
                       'Введите пароль:',
                       style: TextStyle(
@@ -248,14 +248,20 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
-                        'Войти в аккаунт',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Colors.white,
-                          fontSize: 17,
-
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Войти в аккаунт',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w100 ,
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -277,12 +283,24 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding:  EdgeInsets.symmetric(horizontal: 10.0),
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        child: Text(
-                          'Если вы не знаете свои данные, то обратитесть к куратору',
-                          softWrap: true,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey[700]),
+                        width: MediaQuery.of(context).size.shortestSide / 1.5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              child: Text('❤',
+                            style: TextStyle(color: Colors.grey[700]),),
+                              onTap: (){
+                                print('object');
+                              },
+                            ),
+                            Text(
+                              'Если вы не знаете свои данные, то обратитесть к куратору❤',
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                          ],
                         ),
                       ),
                     ),
