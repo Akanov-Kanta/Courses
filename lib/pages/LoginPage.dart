@@ -1,7 +1,7 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
+
 import 'package:courses/pages/DeveloperPage.dart';
 import 'package:flutter/material.dart';
-
+import 'package:awesome_dialog/awesome_dialog.dart';
 import '../AlertDialogCustom.dart';
 
 class LoginPage extends StatefulWidget {
