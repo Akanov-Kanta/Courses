@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SideMenu extends StatefulWidget{
-  const SideMenu({super.key});
+class SidebarD extends StatefulWidget{
+  const SidebarD({super.key});
 
   @override
-  State<SideMenu> createState()=> _SideMenuState();
+  State<SidebarD> createState()=> _SidebarDState();
 }
 
-class _SideMenuState extends State<SideMenu>{
+class _SidebarDState extends State<SidebarD>{
   @override
   int _selectedIndex = 0;
   void _onItemTapped(int index) {
@@ -19,14 +19,14 @@ class _SideMenuState extends State<SideMenu>{
   Widget build(BuildContext context){
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.shifting,
-          currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromRGBO(2, 56, 209, 1),
-          unselectedItemColor: Color.fromRGBO(106, 106, 139, 1),
-          iconSize: 40,
-          onTap: _onItemTapped,
-          elevation: 5,
-          items: <BottomNavigationBarItem>[
+        type: BottomNavigationBarType.shifting,
+        currentIndex: _selectedIndex,
+        selectedItemColor: Color.fromRGBO(2, 56, 209, 1),
+        unselectedItemColor: Color.fromRGBO(106, 106, 139, 1),
+        iconSize: 40,
+        onTap: _onItemTapped,
+        elevation: 5,
+        items: <BottomNavigationBarItem>[
 
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -56,7 +56,7 @@ class _SideMenuState extends State<SideMenu>{
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(7, 116, 7, 0),
+                padding: EdgeInsets.fromLTRB(9, 116, 7, 0),
                 child: Container(
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(25, 17, 121, 0.1), // Задаем серый цвет фона
@@ -66,7 +66,7 @@ class _SideMenuState extends State<SideMenu>{
 
                     ),
 
-                    padding: EdgeInsets.all(9),
+                    padding: EdgeInsets.only(top:4,bottom: 13),
 
                     child: Column(
                       children: [
@@ -94,45 +94,68 @@ class _SideMenuState extends State<SideMenu>{
                 height: 40,
                 child: Image.asset("assets/images/nisCourses.png"),
               ),
-              ListTile(
-                title: Text(
-                  'Расписание',
-                  style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  'Курсы',
-                  style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
-                ),
-              ),
-              SizedBox(
-                height: 60,
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text("Courses", style: TextStyle(fontFamily: "poppins", fontSize: 18, color: Color(0xFF2E2E5D)),),
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  'Курс 1:  Робототехника',
-                  style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  'Курс 2:  Вокал',
-                  style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  'Секция:  Баскетбол',
-                  style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5,fontFamily: "poppins"),
+              Padding(
+                padding: EdgeInsets.only(left:10),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        'Расписание',
+                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
 
+                      ),
+                      onTap: (){
+                        print("Расписание");
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Курсы',
+                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
+                      ),
+                      onTap: (){
+                        print("Курсы");
+                      },
+                    ),
+                    SizedBox(
+                      height: 70,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text("Courses", style: TextStyle(fontFamily: "poppins", fontSize: 18,fontWeight: FontWeight.w600, color: Color(0xFF2E2E5D)),),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Курс 1:  Робототехника',
+                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
+                      ),
+                      onTap: (){
+                        print("Курс 1");
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Курс 2:  Вокал',
+                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
+                      ),
+                      onTap: (){
+                        print("Курс 2");
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Секция:  Баскетбол',
+                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5,fontFamily: "poppins"),
+
+                      ),
+                      onTap: (){
+                        print("Секция");
+                      },
+                    )
+                  ],
                 ),
               )
             ],
