@@ -34,6 +34,7 @@ class _LoginPageState extends State<LoginPage> {
     return GestureDetector(
       child: Scaffold(
         backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           top: true,
           child: Column(
@@ -48,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: BoxDecoration(
                     color: Colors.white
                   ),
-                  child: Image.asset('images/Illustration.png',
+                  child: Image.asset('assets/images/Illustration.png',
                     fit: BoxFit.contain,) ,
                 ),
               ),

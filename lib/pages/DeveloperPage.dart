@@ -52,7 +52,7 @@ class DeveloperPage extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: Colors.white
                 ),
-                child: Image.asset('images/Developer.jpg',
+                child: Image.asset('assets/images/Developer.jpg',
                   fit: BoxFit.contain,) ,
               ),
             ),

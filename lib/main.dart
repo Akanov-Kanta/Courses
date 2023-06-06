@@ -7,7 +7,7 @@ void main() {
   runApp( MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Courses NIS PTR",
-      home: Topics(),
+      home: LoginPage(),
     // Login()
   ));
 }
