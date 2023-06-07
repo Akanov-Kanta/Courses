@@ -155,7 +155,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                         max: 20,
                       ),
                       TopicCourseTile(
-                        heading: 'laaodow',
+                        heading: 'Подготовка проектов по информатике',
                         count: 5,
                         max: 20,
                       ),
@@ -207,14 +207,18 @@ class TopicCourseTile extends StatelessWidget {
               elevation: 4,
               borderRadius: BorderRadius.circular(5),
               child: Container(
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: Color.fromARGB(255, 242, 241, 247),
                     border: Border.all(color: Colors.grey, width: 0.5)),
                 child: Center(
-                  child: Text(
-                    heading,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      heading,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
