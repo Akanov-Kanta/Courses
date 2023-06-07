@@ -27,12 +27,12 @@ class BottomBarState extends State<BottomBar> {
         items: <BottomNavigationBarItem>[
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Calls',
+            icon: Icon(Icons.home_rounded),
+            label: 'Расписание',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.my_library_books),
-            label: 'Chats',
+            label: 'Курсы',
           ),
         ],
       );

@@ -8,6 +8,7 @@ void main() {
   runApp( MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Courses NIS PTR",
+      theme: ThemeData(fontFamily: 'Poppins'),
       home: MainPage(),
     // Login()
   ));
