@@ -1,4 +1,5 @@
 import 'package:courses/pages/courses/all_topics.dart';
+import 'package:courses/pages/courses/customdialog.dart';
 import 'package:flutter/material.dart';
 
 class TopicCourses extends StatefulWidget {
@@ -239,6 +240,14 @@ class TopicCourseTile extends StatelessWidget {
           ],
         ),
       ),
+      onTap: (){
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomDialog(topicNAME: heading, count: count,max: max,);
+          },
+        );
+      },
     );
   }
 }
