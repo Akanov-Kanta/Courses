@@ -7,17 +7,9 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  void openDrawer() {
-    _scaffoldKey.currentState!.openDrawer();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        key: _scaffoldKey,
-        drawer: Drawer(
+    return Drawer(
           child: SafeArea(
             child: Stack(
               children: [
@@ -103,22 +95,6 @@ class _SidebarState extends State<Sidebar> {
             ),
 
           ),
-        ),
-        body: Column(
-          mainAxisAlignment : MainAxisAlignment.start,
-          crossAxisAlignment : CrossAxisAlignment.end,
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: FloatingActionButton(
-                onPressed: () { openDrawer(); },
-                child: Icon(Icons.table_rows_sharp, color:Colors.blue),
-                backgroundColor: Colors.white,
-
-              ),
-            )
-          ],
-        )
-    );
+        );
   }
 }

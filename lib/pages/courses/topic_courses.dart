@@ -2,8 +2,9 @@ import 'package:courses/pages/courses/all_topics.dart';
 import 'package:flutter/material.dart';
 
 class TopicCourses extends StatefulWidget {
-  const TopicCourses({super.key, required this.topicName});
+  TopicCourses({super.key, required this.topicName, required this.changePage});
   final String topicName;
+  void Function(int) changePage;
 
   @override
   State<TopicCourses> createState() => _TopicCoursesState();
@@ -22,10 +23,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return Topics();
-                    }));
+                    widget.changePage(1);
                   },
                   child: Container(
                     width: double.infinity,
