@@ -3,8 +3,9 @@ import 'package:courses/pages/courses/customdialog.dart';
 import 'package:flutter/material.dart';
 
 class TopicCourses extends StatefulWidget {
-  const TopicCourses({super.key, required this.topicName});
+  TopicCourses({super.key, required this.topicName, required this.changePage});
   final String topicName;
+  void Function(int) changePage;
 
   @override
   State<TopicCourses> createState() => _TopicCoursesState();
@@ -23,10 +24,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return Topics();
-                    }));
+                    widget.changePage(1);
                   },
                   child: Container(
                     width: double.infinity,
@@ -157,7 +155,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                         max: 20,
                       ),
                       TopicCourseTile(
-                        heading: 'laaodow',
+                        heading: 'Подготовка проектов по информатике',
                         count: 5,
                         max: 20,
                       ),
@@ -209,14 +207,18 @@ class TopicCourseTile extends StatelessWidget {
               elevation: 4,
               borderRadius: BorderRadius.circular(5),
               child: Container(
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: Color.fromARGB(255, 242, 241, 247),
                     border: Border.all(color: Colors.grey, width: 0.5)),
                 child: Center(
-                  child: Text(
-                    heading,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      heading,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
