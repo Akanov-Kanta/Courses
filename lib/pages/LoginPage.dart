@@ -1,8 +1,8 @@
 
 import 'package:courses/pages/DeveloperPage.dart';
+import 'package:courses/pages/courses/createnewcourse.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import '../AlertDialogCustom.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -225,11 +225,6 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.normal,
                         ),
                         keyboardType: TextInputType.visiblePassword,
-                        // validator:
-                        //     (email)=>
-                        // email !=null && ! EmailValidator.validate(email)
-                        //     ? 'Введите правильную почту'
-                        //     : null,
                       ),
                     ),
                   ),
@@ -244,17 +239,11 @@ class _LoginPageState extends State<LoginPage> {
                     width: 300,
                     child: ElevatedButton(
                       onPressed: () {
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.success,
-                          animType: AnimType.bottomSlide,
-                          showCloseIcon: false,
-                          title: 'Успешно!',
-                          desc: 'Вы успешно записались на курс!!',
-                          width: 500,
-                          btnOkText: 'Хорошо',
-                          btnOkOnPress: (){},
-                        ).show();
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context){
+                              return CreateNewCourse();
+                            });
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 24),

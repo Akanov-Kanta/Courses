@@ -20,9 +20,6 @@ class EntryPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Expanded(
-                flex: 10,
-                  child:
               Align(
                 alignment: AlignmentDirectional(0,0),
                 child: Padding(
@@ -150,7 +147,6 @@ class EntryPage extends StatelessWidget {
                                   )
                                   ),
                                   SizedBox(height: 20,),
-
                                   Align(
                                     alignment: AlignmentDirectional(-1, 0),
                                     child: Padding(
@@ -216,7 +212,6 @@ class EntryPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
               )
             ],
           ),
