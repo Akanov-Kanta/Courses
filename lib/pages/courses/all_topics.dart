@@ -1,4 +1,5 @@
 import 'package:courses/pages/courses/topic_courses.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Topics extends StatelessWidget {
@@ -8,6 +9,7 @@ class Topics extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+
         body: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
@@ -45,6 +47,17 @@ class Topics extends StatelessWidget {
                     TopicTile(heading: 'Искусство', description: 'Кружки'),
                     TopicTile(heading: 'Спортивные секции', description: 'Секции'),
                   ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20),
+                  child: IconButton(
+                      onPressed: (){
+                        FirebaseAuth.instance.signOut();
+                      },
+                      icon: Icon(Icons.logout)),
                 ),
               ),
             ],

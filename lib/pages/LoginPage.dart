@@ -3,6 +3,7 @@ import 'package:courses/pages/DeveloperPage.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import '../AlertDialogCustom.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,6 +13,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  void signUserIn() async {
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailcontroller.text,
+          password: passwordcontroller.text);}on FirebaseAuthException{
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Ошибка"),
+              content: Text("Неправильные данные"),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+  }
+
 
   TextEditingController emailcontroller=TextEditingController();
   TextEditingController passwordcontroller=TextEditingController();
@@ -244,17 +269,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 300,
                     child: ElevatedButton(
                       onPressed: () {
-                        AwesomeDialog(
-                          context: context,
-                          dialogType: DialogType.success,
-                          animType: AnimType.bottomSlide,
-                          showCloseIcon: false,
-                          title: 'Успешно!',
-                          desc: 'Вы успешно записались на курс!!',
-                          width: 500,
-                          btnOkText: 'Хорошо',
-                          btnOkOnPress: (){},
-                        ).show();
+                        signUserIn();
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 24),
