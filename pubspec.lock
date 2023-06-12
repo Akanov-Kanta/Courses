@@ -122,7 +122,7 @@ packages:
     source: hosted
     version: "5.5.2"
   firebase_core:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: firebase_core
       sha256: e9b36b391690cf329c6fb1de220045e97c13784c303820cd33962319580a56c6
@@ -454,5 +454,5 @@ packages:
     source: hosted
     version: "1.0.0"
 sdks:
-  dart: ">=2.19.5 <3.0.0"
+  dart: ">=2.19.2 <3.0.0"
   flutter: ">=3.3.0"

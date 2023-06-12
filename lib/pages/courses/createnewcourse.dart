@@ -13,9 +13,8 @@ class CreateNewCourse extends StatelessWidget {
     final TextEditingController _courseAmount=TextEditingController();
     final TextEditingController _courseRazdel=TextEditingController();
 
-    List<String> _dayweek = ['Понедельник', 'Вторник', 'Среда','Четверг',' Пятница'];
+    List<String> _dayweek = ['Понедельник', 'Вторник', 'Среда','Четверг',' Пятница','Суббота','Воскресенье'];
     String? _selectedOption;
-    String? _selectedOption2;
 
 
 
