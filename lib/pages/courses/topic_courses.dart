@@ -3,9 +3,8 @@ import 'package:courses/pages/courses/customdialog.dart';
 import 'package:flutter/material.dart';
 
 class TopicCourses extends StatefulWidget {
-  TopicCourses({super.key, required this.topicName, required this.changePage});
+  const TopicCourses({super.key, required this.topicName});
   final String topicName;
-  void Function(int) changePage;
 
   @override
   State<TopicCourses> createState() => _TopicCoursesState();
@@ -24,7 +23,10 @@ class _TopicCoursesState extends State<TopicCourses> {
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: GestureDetector(
                   onTap: () {
-                    widget.changePage(1);
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return Topics();
+                    }));
                   },
                   child: Container(
                     width: double.infinity,
@@ -155,7 +157,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                         max: 20,
                       ),
                       TopicCourseTile(
-                        heading: 'Подготовка проектов по информатике',
+                        heading: 'laaodow',
                         count: 5,
                         max: 20,
                       ),
@@ -207,18 +209,14 @@ class TopicCourseTile extends StatelessWidget {
               elevation: 4,
               borderRadius: BorderRadius.circular(5),
               child: Container(
-                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     color: Color.fromARGB(255, 242, 241, 247),
                     border: Border.all(color: Colors.grey, width: 0.5)),
                 child: Center(
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      heading,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                  child: Text(
+                    heading,
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

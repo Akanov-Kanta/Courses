@@ -1,8 +1,8 @@
 
 import 'package:courses/pages/DeveloperPage.dart';
-import 'package:courses/pages/courses/createnewcourse.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import '../AlertDialogCustom.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
@@ -250,6 +250,11 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.normal,
                         ),
                         keyboardType: TextInputType.visiblePassword,
+                        // validator:
+                        //     (email)=>
+                        // email !=null && ! EmailValidator.validate(email)
+                        //     ? 'Введите правильную почту'
+                        //     : null,
                       ),
                     ),
                   ),
