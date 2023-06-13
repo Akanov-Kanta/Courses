@@ -15,7 +15,8 @@ class _LoginPageState extends State<LoginPage> {
     try{
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailcontroller.text,
-          password: passwordcontroller.text);}on FirebaseAuthException{
+          password: passwordcontroller.text);}on FirebaseAuthException catch(e){
+            print(e);
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -119,7 +120,6 @@ class _LoginPageState extends State<LoginPage> {
                       width: 450,
                       height: 50,
                       child: TextFormField(
-                        autofocus: true,
                         controller: emailcontroller,
                         textCapitalization: TextCapitalization.none,
                         obscureText: false,
@@ -200,7 +200,6 @@ class _LoginPageState extends State<LoginPage> {
                       width: 450,
                       height: 50,
                       child: TextFormField(
-                        autofocus: true,
                         controller: passwordcontroller,
                         textCapitalization: TextCapitalization.none,
                         obscureText: false,

@@ -1,10 +1,10 @@
 import 'package:courses/pages/courses/topic_courses.dart';
 import 'package:flutter/material.dart';
 import 'package:courses/pages/schedule.dart';
-import 'package:courses/pages/courses/customdialog.dart';
+import 'package:courses/pages/courses/course_info_dialog.dart';
 
-class teacherCourses extends StatelessWidget {
-  teacherCourses({super.key});
+class teacherCoursesList extends StatelessWidget {
+  teacherCoursesList({super.key});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -38,25 +38,20 @@ class teacherCourses extends StatelessWidget {
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.all(10.0),
               children: [
-                TopicTile(
+                TeacherCourse(
                   heading: 'Олимпиадная подготовка',
-                  description: '1 курс / 2 курс',
                 ),
-                TopicTile(
+                TeacherCourse(
                   heading: 'Подготовка Научных проектов',
-                  description: '1 курс / 2 курс',
                 ),
-                TopicTile(
+                TeacherCourse(
                   heading: 'Дополнительные знания',
-                  description: '1 курс / 2 курс',
                 ),
-                TopicTile(
+                TeacherCourse(
                   heading: 'Искусство',
-                  description: 'Кружки',
                 ),
-                TopicTile(
+                TeacherCourse(
                   heading: 'Спортивные секции',
-                  description: 'Секции',
                 ),
               ],
             ),
@@ -67,12 +62,11 @@ class teacherCourses extends StatelessWidget {
   }
 }
 
-class TopicTile extends StatelessWidget {
-  TopicTile(
+class TeacherCourse extends StatelessWidget {
+  TeacherCourse(
       {super.key,
-        required this.heading,
-        required this.description,});
-  String heading, description;
+        required this.heading,});
+  String heading;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -82,37 +76,27 @@ class TopicTile extends StatelessWidget {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return CustomDialog(topicNAME: heading, count: 15,max: 20,);
+                return CourseInfoDialog(topicNAME: heading, count: 15,max: 20,);
               }
           );
         },
         child: SizedBox(
           width: double.infinity,
-          height: 100,
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(10),
             child: Container(
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Color.fromARGB(255, 242, 241, 247),
                   border: Border.all(color: Colors.grey, width: 0.5)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    heading,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    description,
-                    style: TextStyle(color: Color(0xFF4838D1), fontSize: 15),
-                  ),
-                ],
+              child: Center(
+                child: Text(
+                  heading,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ),

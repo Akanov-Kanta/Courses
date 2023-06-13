@@ -4,7 +4,10 @@ import 'package:courses/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:courses/pages/schedule.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:courses/pages/Auth.dart';
+import 'package:courses/Auth.dart';
+
+enum Roles {student, teacher, admin}
+Roles userRole = Roles.admin;
 
 Future main() async{
   WidgetsFlutterBinding.ensureInitialized();

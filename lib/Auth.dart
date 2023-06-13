@@ -1,8 +1,9 @@
+import 'package:courses/pages/main_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:courses/pages/LoginPage.dart';
 import 'package:courses/pages/courses/all_topics.dart';
-import 'package:courses/pages/teacherCourses.dart';
+import 'package:courses/pages/courses/teacherCourses.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -15,7 +16,7 @@ class AuthPage extends StatelessWidget {
         builder: (context, snapshot) {
           // user is logged in
           if (snapshot.hasData) {
-            return teacherCourses();
+            return MainPage();
           }
 
           // user is NOT logged in

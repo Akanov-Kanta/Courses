@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
 import '../../const/constants.dart';
+import '../../main.dart';
 
-class CustomDialog extends StatelessWidget {
-  const CustomDialog({super.key, required this.topicNAME, required this.count,required this.max});
+class CourseInfoDialog extends StatelessWidget {
+  const CourseInfoDialog({super.key, required this.topicNAME, required this.count,required this.max});
    final String topicNAME;
    final int max, count;
   @override
@@ -72,7 +73,7 @@ class CustomDialog extends StatelessWidget {
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding: EdgeInsetsDirectional.fromSTEB(30, 0, 0, 0),
+                                          padding: EdgeInsets.all(5),
                                           child: SizedBox(
                                             width: double.infinity,
                                             child: Text(
@@ -113,7 +114,7 @@ class CustomDialog extends StatelessWidget {
                                               width: double.infinity,
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(10),
-                                                  color: count < 11
+                                                  color: count < max
                                                       ? TransGreen
                                                       : TransRed),
                                               child: Center(child: Text('$count/$max')))),
@@ -171,7 +172,7 @@ class CustomDialog extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(50, 0, 50, 50),
                             child: ElevatedButton(
-                              onPressed: count!=max ? () {
+                              onPressed: userRole == Roles.student && count < max ? () {
                                 AwesomeDialog(
                                   context: context,
                                   dialogType: DialogType.success,

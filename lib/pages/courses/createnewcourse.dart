@@ -1,91 +1,140 @@
 import 'package:flutter/material.dart';
-class CreateNewCourse extends StatelessWidget {
+
+class CreateNewCourse extends StatefulWidget {
   const CreateNewCourse({Key? key}) : super(key: key);
 
   @override
+  State<CreateNewCourse> createState() => _CreateNewCourseState();
+}
+
+class _CreateNewCourseState extends State<CreateNewCourse> {
+  @override
   Widget build(BuildContext context) {
-    double screenWidth ;
-    double screenHeight ;
-    final TextEditingController _courseName=TextEditingController();
-    final TextEditingController _courseTeacher=TextEditingController();
-    final TextEditingController _courseCabinet=TextEditingController();
-    final TextEditingController _courseTimeWeek=TextEditingController();
-    final TextEditingController _courseAmount=TextEditingController();
-    final TextEditingController _courseRazdel=TextEditingController();
+    double screenWidth;
+    double screenHeight;
+    final TextEditingController _courseName = TextEditingController();
+    final TextEditingController _courseTeacher = TextEditingController();
+    final TextEditingController _courseCabinet = TextEditingController();
+    final TextEditingController _courseAmount = TextEditingController();
 
-    List<String> _dayweek = ['Понедельник', 'Вторник', 'Среда','Четверг',' Пятница','Суббота','Воскресенье'];
-    String? _selectedOption;
+    List<String> _dayweek = [
+      'Понедельник',
+      'Вторник',
+      'Среда',
+      'Четверг',
+      ' Пятница',
+      'Суббота',
+      'Воскресенье'
+    ];
 
+    Map<String?, TextEditingController> timeList = {
+      null: TextEditingController()
+    };
+    List<TimeTile> timeTileList = [];
+    remove() {
+      setState(() {
+        timeTileList.removeLast();
+        timeList.remove(timeList.keys.elementAt(timeList.length - 1));
+      });
+    }
 
-
+    add() {
+      print('aaaddadada');
+      setState(() {
+        timeList.addAll({null: TextEditingController()});
+        timeTileList.add(TimeTile(
+            timeList: timeList,
+            options: _dayweek,
+            index: timeList.length - 1,
+            add: add,
+            remove: remove));
+      });
+      print(timeList);
+      print(timeTileList);
+    }
 
     if (MediaQuery.of(context).size.width > 600) {
-      screenWidth =500;
-     screenHeight =MediaQuery.of(context).size.height;
-    }
-    else {
-       screenWidth =MediaQuery.of(context).size.width;
-       screenHeight =MediaQuery.of(context).size.height;
+      screenWidth = 500;
+      screenHeight = MediaQuery.of(context).size.height;
+    } else {
+      screenWidth = MediaQuery.of(context).size.width;
+      screenHeight = MediaQuery.of(context).size.height;
     }
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10)
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         width: screenWidth,
         height: screenHeight,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10)
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 70,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white54,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5), // Shadow color
-                      spreadRadius: 1, // Spread radius
-                      blurRadius: 1, // Blur radius
-                      offset: Offset(0, 2), // Offset in the x and y direction
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    'Создание нового курса',
-                    style: TextStyle(
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white54,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5), // Shadow color
+                    spreadRadius: 1, // Spread radius
+                    blurRadius: 1, // Blur radius
+                    offset: Offset(0, 2), // Offset in the x and y direction
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  'Создание нового курса',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
                       fontSize: 30,
                       fontFamily: 'Futura',
-                      fontWeight: FontWeight.w300
-                    ),
-                  ),
+                      fontWeight: FontWeight.w300),
                 ),
               ),
-              SizedBox(height: 15,),
-              CustomInputField(texting: 'Введите название курса', controller: _courseName),
-              CustomInputField(texting: 'Введите ФИО учителя', controller: _courseTeacher),
-              CustomInputField(texting: 'Введите кабинет', controller: _courseCabinet),
-              CustomInputField(texting: 'Введите максимальное количество участников', controller: _courseAmount),
-              CustomInputField(texting: 'Введите время на день', controller: _courseTimeWeek),
-              CustomDropDown(
-                texting: 'Выберите день недели',
-                selectedOption: _selectedOption,
-                onChanged: (String? newValue) {
-                  _selectedOption = newValue;
-                  _courseTimeWeek.text = newValue ?? '';
-                },
-                options: _dayweek,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    CustomInputField(
+                        texting: 'Введите название курса',
+                        controller: _courseName),
+                    CustomInputField(
+                        texting: 'Введите ФИО учителя',
+                        controller: _courseTeacher),
+                    CustomInputField(
+                        texting: 'Введите кабинет', controller: _courseCabinet),
+                    CustomInputField(
+                        texting: 'Введите максимальное количество участников',
+                        controller: _courseAmount),
+                    Divider(
+                      thickness: 2,
+                    ),
+                    CustomDropDown(
+                      texting: 'Выберите день недели',
+                      selectedOption: timeList.keys.elementAt(0),
+                      options: _dayweek,
+                    ),
+                    CustomInputField(
+                        texting: 'Введите время на день',
+                        controller: timeList.values.elementAt(0)),
+                    IconButton(
+                        onPressed: () {
+                          print('addddd');
+                          add();
+                        },
+                        icon: Icon(Icons.add)),
+                    ...timeTileList
+                  ],
+                ),
               ),
-            ],
-
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -107,7 +156,6 @@ class CustomInputField extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 100,
-
       child: Column(
         children: [
           SizedBox(
@@ -116,13 +164,16 @@ class CustomInputField extends StatelessWidget {
           Text(
             texting,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontFamily: 'Futura', fontSize: 18,),
+            style: TextStyle(
+              fontFamily: 'Futura',
+              fontSize: 18,
+            ),
           ),
           SizedBox(
             height: 8,
           ),
           Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(30, 0, 30, 0),
+            padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
             child: TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -139,7 +190,6 @@ class CustomInputField extends StatelessWidget {
                     color: Colors.black,
                     width: 1,
                   ),
-
                   borderRadius: BorderRadius.circular(30),
                 ),
                 enabledBorder: OutlineInputBorder(
@@ -172,15 +222,13 @@ class CustomInputField extends StatelessWidget {
 
 class CustomDropDown extends StatelessWidget {
   final String texting;
-  final String? selectedOption;
-  final ValueChanged<String?> onChanged;
+  String? selectedOption;
   final List<String> options;
 
-  const CustomDropDown({
+  CustomDropDown({
     Key? key,
     required this.texting,
     required this.selectedOption,
-    required this.onChanged,
     required this.options,
   }) : super(key: key);
 
@@ -199,12 +247,14 @@ class CustomDropDown extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(30, 0, 30, 0),
+            padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
             child: DropdownButtonFormField<String>(
               value: selectedOption,
-              onChanged: onChanged,
+              onChanged: (String? newValue) {
+                selectedOption = newValue;
+              },
               items: options.map<DropdownMenuItem<String>>(
-                    (String value) {
+                (String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -233,14 +283,63 @@ class CustomDropDown extends StatelessWidget {
                 ),
               ),
               style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 18,
-                fontWeight: FontWeight.normal,
-              ),
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class TimeTile extends StatelessWidget {
+  TimeTile(
+      {super.key,
+      required this.timeList,
+      required this.options,
+      required this.index,
+      required this.add,
+      required this.remove});
+  Map<String?, TextEditingController> timeList;
+  List<String> options;
+  int index;
+  Function() add;
+  Function() remove;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Divider(
+          thickness: 2,
+        ),
+        CustomDropDown(
+          texting: 'Выберите день недели',
+          selectedOption: timeList.keys.elementAt(index),
+          options: options,
+        ),
+        CustomInputField(
+            texting: 'Введите время на день',
+            controller: timeList.values.elementAt(index)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            IconButton(
+                onPressed: () {
+                  add();
+                },
+                icon: Icon(Icons.add)),
+            IconButton(
+                onPressed: () {
+                  remove();
+                },
+                icon: Icon(Icons.remove)),
+          ],
+        ),
+      ],
     );
   }
 }

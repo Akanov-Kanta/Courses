@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
@@ -46,7 +47,7 @@ class _SidebarState extends State<Sidebar> {
                         ),
                         ListTile(
                           tileColor: Colors.black,
-                          title:Text("bekkozhina_a0701@ptr.nis.edu.kz", style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
+                          title:Text(FirebaseAuth.instance.currentUser!.email!, style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
 
                           ),
                         ),

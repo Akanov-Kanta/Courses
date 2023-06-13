@@ -1,3 +1,5 @@
+import 'package:courses/const/constants.dart';
+import 'package:courses/main.dart';
 import 'package:flutter/material.dart';
 
 class BottomBar extends StatefulWidget {
@@ -14,7 +16,7 @@ class BottomBarState extends State<BottomBar> {
     return BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         currentIndex: selectedIndex,
-        selectedItemColor: Color.fromRGBO(2, 56, 209, 1),
+        selectedItemColor: DarkPurple,
         unselectedItemColor: Color.fromRGBO(106, 106, 139, 1),
         iconSize: 40,
         onTap: (int index){
@@ -27,8 +29,8 @@ class BottomBarState extends State<BottomBar> {
         items: <BottomNavigationBarItem>[
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Расписание',
+            icon: Icon(userRole == Roles.student ? Icons.list_rounded : userRole == Roles.teacher ? Icons.work_rounded : Icons.people_rounded),
+            label: userRole == Roles.student ? 'Расписание' : userRole == Roles.teacher ? 'Мои курсы' : 'Пользователи',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.my_library_books),
