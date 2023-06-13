@@ -1,8 +1,7 @@
-
 import 'package:courses/pages/DeveloperPage.dart';
-import 'package:courses/pages/courses/createnewcourse.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,6 +11,32 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  void signUserIn() async {
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailcontroller.text,
+          password: passwordcontroller.text);}
+    on
+    FirebaseAuthException catch (e) {
+      print(e.code);
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        SnackBarService.showSnackBar(
+          context,
+          'Неправильный email или пароль. Повторите попытку',
+          true,
+        );
+        return;
+      } else {
+        SnackBarService.showSnackBar(
+          context,
+          "Введите все данные корректно",
+          true,
+        );
+        return;
+      }
+    }
+  }
+
 
   TextEditingController emailcontroller=TextEditingController();
   TextEditingController passwordcontroller=TextEditingController();
@@ -47,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: 300,
                   height: 230,
                   decoration: BoxDecoration(
-                    color: Colors.white
+                      color: Colors.white
                   ),
                   child: Image.asset('assets/images/Illustration.png',
                     fit: BoxFit.contain,) ,
@@ -96,7 +121,6 @@ class _LoginPageState extends State<LoginPage> {
                       width: 450,
                       height: 50,
                       child: TextFormField(
-                        autofocus: true,
                         controller: emailcontroller,
                         textCapitalization: TextCapitalization.none,
                         obscureText: false,
@@ -177,7 +201,6 @@ class _LoginPageState extends State<LoginPage> {
                       width: 450,
                       height: 50,
                       child: TextFormField(
-                        autofocus: true,
                         controller: passwordcontroller,
                         textCapitalization: TextCapitalization.none,
                         obscureText: false,
@@ -225,6 +248,11 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.normal,
                         ),
                         keyboardType: TextInputType.visiblePassword,
+                        // validator:
+                        //     (email)=>
+                        // email !=null && ! EmailValidator.validate(email)
+                        //     ? 'Введите правильную почту'
+                        //     : null,
                       ),
                     ),
                   ),
@@ -239,11 +267,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 300,
                     child: ElevatedButton(
                       onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context){
-                              return CreateNewCourse();
-                            });
+                        signUserIn();
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 24),
@@ -333,6 +357,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
+class SnackBarService {
+  static const errorColor = Colors.red;
+  static const okColor = Colors.green;
+
+  static Future<void> showSnackBar(
+      BuildContext context, String message, bool error) async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: error ? errorColor : okColor,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+}
 
 
 
