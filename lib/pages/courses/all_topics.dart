@@ -1,75 +1,75 @@
 import 'package:courses/pages/courses/topic_courses.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Topics extends StatelessWidget {
-  const Topics({super.key});
-
+  Topics({super.key});
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Поиск курсов',
-                    suffixIcon: Icon(Icons.search),
-                    contentPadding: EdgeInsets.all(10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        style: BorderStyle.none,
-                        width: 0,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 242, 241, 247),
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Поиск курсов',
+                suffixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.all(10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    style: BorderStyle.none,
+                    width: 0,
                   ),
                 ),
+                filled: true,
+                fillColor: Colors.white,
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: ListView(
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.all(10.0),
-                  children: [
-                    TopicTile(heading: 'Олимпиадная подготовка', description: '1 курс / 2 курс'),
-                    TopicTile(heading: 'Подготовка Научных проектов', description: '1 курс / 2 курс'),
-                    TopicTile(heading: 'Дополнительные знания', description: '1 курс / 2 курс'),
-                    TopicTile(heading: 'Искусство', description: 'Кружки'),
-                    TopicTile(heading: 'Спортивные секции', description: 'Секции'),
-                  ],
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 20),
-                  child: IconButton(
-                      onPressed: (){
-                        FirebaseAuth.instance.signOut();
-                      },
-                      icon: Icon(Icons.logout)),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: ListView(
+              physics: BouncingScrollPhysics(),
+              padding: EdgeInsets.all(10.0),
+              children: [
+                TopicTile(
+                  heading: 'Олимпиадная подготовка',
+                  description: '1 курс / 2 курс',
+                ),
+                TopicTile(
+                  heading: 'Подготовка Научных проектов',
+                  description: '1 курс / 2 курс',
+                ),
+                TopicTile(
+                  heading: 'Дополнительные знания',
+                  description: '1 курс / 2 курс',
+                ),
+                TopicTile(
+                  heading: 'Искусство',
+                  description: 'Кружки',
+                ),
+                TopicTile(
+                  heading: 'Спортивные секции',
+                  description: 'Секции',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class TopicTile extends StatelessWidget {
-  TopicTile({super.key, required this.heading, required this.description});
+  TopicTile(
+      {super.key,
+        required this.heading,
+        required this.description,});
   String heading, description;
   @override
   Widget build(BuildContext context) {
@@ -77,9 +77,6 @@ class TopicTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-            return TopicCourses(topicName: heading);
-          }));
         },
         child: SizedBox(
           width: double.infinity,
@@ -96,9 +93,17 @@ class TopicTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-              Text(heading, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-              SizedBox(height: 10,),
-              Text(description, style: TextStyle(color: Color(0xFF4838D1), fontSize: 15),),
+                  Text(
+                    heading,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    description,
+                    style: TextStyle(color: Color(0xFF4838D1), fontSize: 15),
+                  ),
                 ],
               ),
             ),
