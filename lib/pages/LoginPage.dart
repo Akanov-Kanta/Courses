@@ -1,8 +1,7 @@
-
 import 'package:courses/pages/DeveloperPage.dart';
-import 'package:courses/pages/courses/createnewcourse.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,6 +11,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  void signUserIn() async {
+    try{
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailcontroller.text,
+          password: passwordcontroller.text);}on FirebaseAuthException{
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Ошибка"),
+              content: Text("Неправильные данные"),
+              actions: [
+                TextButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+  }
+
 
   TextEditingController emailcontroller=TextEditingController();
   TextEditingController passwordcontroller=TextEditingController();
@@ -47,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: 300,
                   height: 230,
                   decoration: BoxDecoration(
-                    color: Colors.white
+                      color: Colors.white
                   ),
                   child: Image.asset('assets/images/Illustration.png',
                     fit: BoxFit.contain,) ,
@@ -225,6 +248,11 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.normal,
                         ),
                         keyboardType: TextInputType.visiblePassword,
+                        // validator:
+                        //     (email)=>
+                        // email !=null && ! EmailValidator.validate(email)
+                        //     ? 'Введите правильную почту'
+                        //     : null,
                       ),
                     ),
                   ),
@@ -239,11 +267,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 300,
                     child: ElevatedButton(
                       onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context){
-                              return CreateNewCourse();
-                            });
+                        signUserIn();
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 24),
@@ -332,7 +356,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
 
 
 
