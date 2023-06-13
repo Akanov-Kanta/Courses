@@ -15,24 +15,25 @@ class _LoginPageState extends State<LoginPage> {
     try{
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailcontroller.text,
-          password: passwordcontroller.text);}on FirebaseAuthException catch(e){
-            print(e);
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Ошибка"),
-              content: Text("Неправильные данные"),
-              actions: [
-                TextButton(
-                  child: Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
+          password: passwordcontroller.text);}
+    on
+    FirebaseAuthException catch (e) {
+      print(e.code);
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        SnackBarService.showSnackBar(
+          context,
+          'Неправильный email или пароль. Повторите попытку',
+          true,
+        );
+        return;
+      } else {
+        SnackBarService.showSnackBar(
+          context,
+          "Введите все данные корректно",
+          true,
+        );
+        return;
+      }
     }
   }
 
@@ -353,6 +354,23 @@ class _LoginPageState extends State<LoginPage> {
 
       ),
     );
+  }
+}
+
+class SnackBarService {
+  static const errorColor = Colors.red;
+  static const okColor = Colors.green;
+
+  static Future<void> showSnackBar(
+      BuildContext context, String message, bool error) async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: error ? errorColor : okColor,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
