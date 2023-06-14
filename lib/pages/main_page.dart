@@ -9,6 +9,7 @@ import 'package:courses/pages/schedule.dart';
 import 'package:courses/pages/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:courses/side_bar.dart';
+import 'package:courses/pages/createnewuser.dart';
 
 import '../bottom_bar.dart';
 import '../main.dart';
@@ -103,9 +104,13 @@ class _MainPageState extends State<MainPage> {
                   : currentPage.runtimeType == UsersListPage
                   ? FloatingActionButton(
                       onPressed: () {
-                        showDialog(context: context, builder: (context){
-                          return CreateNewUser();
-                        });
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CreateNewUser();
+                            }
+                        );
+
                       },
                       child: Icon(Icons.group_add_rounded),
                       backgroundColor: DarkPurple,
