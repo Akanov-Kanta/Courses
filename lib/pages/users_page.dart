@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -56,17 +57,30 @@ class UsersListPage extends StatelessWidget {
     );
   }
 
-  void _deleteUser(User user) {
+  void _deleteUser(User user) async {
+    // Delete from Firebase Realtime Database
     FirebaseDatabase.instance
         .reference()
         .child("users")
         .child(user.id)
         .remove()
-        .then((value) {
-      print("User deleted successfully");
+        .then((_) {
+      print("User deleted successfully from Realtime Database");
     }).catchError((error) {
-      print("Failed to delete user: $error");
+      print("Failed to delete user from Realtime Database: $error");
     });
+
+    // Delete from Firebase Authentication
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null && currentUser.uid == user.id) {
+        // Delete the currently authenticated user
+        await currentUser.delete();
+        print("User deleted successfully from Firebase Authentication");
+      }
+    } catch (error) {
+      print("Failed to delete user from Firebase Authentication: $error");
+    }
   }
 }
 
