@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:courses/pages/schedule.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:courses/Auth.dart';
+import 'package:courses/pages/users_page.dart';
 
 enum Roles {student, teacher, admin}
 Roles userRole = Roles.admin;
@@ -15,6 +16,7 @@ Future main() async{
       options: FirebaseOptions(
         apiKey: "AIzaSyBgIMiDfWszcjDrUOlFLQx7zmWP-52iywo",
         authDomain: "coursesnis-87b8f.firebaseapp.com",
+        databaseURL: "https://coursesnis-87b8f-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "coursesnis-87b8f",
         storageBucket: "coursesnis-87b8f.appspot.com",
         messagingSenderId: "402293224745",

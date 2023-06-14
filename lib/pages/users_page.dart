@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:courses/pages/createnewuser.dart';
 
 class UsersListPage extends StatefulWidget {
   const UsersListPage({super.key});
@@ -14,10 +15,14 @@ class _UsersListPageState extends State<UsersListPage> {
       physics: BouncingScrollPhysics(),
       padding: EdgeInsets.all(25),
       children: [
-        UserTile(
-            name: 'Ғалымжан Арсен Ренатұлы',
-            email: 'galymjan_a1101@ptr.nis.edu.kz',
-            role: 'Ученик 9D')
+        GestureDetector(
+          child: UserTile(
+              name: 'Ғалымжан Арсен Ренатұлы',
+              email: 'galymjan_a1101@ptr.nis.edu.kz',
+              role: 'Ученик 9D'),
+          onTap: (){
+          }
+        )
       ],
     );
   }
