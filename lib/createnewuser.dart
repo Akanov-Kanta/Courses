@@ -1,4 +1,7 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:courses/pages/courses/createnewcourse.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class CreateNewUser extends StatefulWidget {
@@ -162,6 +165,59 @@ class CreateTeacher extends StatefulWidget {
 class _CreateTeacherState extends State<CreateTeacher> {
   TextEditingController _membershipController =TextEditingController();
   TextEditingController _nameController=TextEditingController();
+  TextEditingController _emailTeacher=TextEditingController();
+  TextEditingController _passwordTeacher=TextEditingController();
+
+  void sendDataToFirebaseTeacher() async {
+    try {
+      FirebaseAuth auth = FirebaseAuth.instance;
+      DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+
+      String fio = _nameController.text;
+      String email = _emailTeacher.text;
+      String password = _passwordTeacher.text;
+
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      String uid = userCredential.user!.uid;
+
+      dbRef.child('users').child(uid).set({
+        'fio': fio,
+
+        'email': email,
+        'role': 'Teacher'
+      });
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.success,
+          animType: AnimType.topSlide,
+          showCloseIcon:false,
+          title: 'Вы успешно добавили учителя!!',
+          btnOkOnPress: (){
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();}
+      ).show();
+
+      print('Данные успешно отправлены в Firebase.');
+    } catch (e) {
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.topSlide,
+          showCloseIcon:false,
+          title: 'Что то пошло не так :(',
+          desc: 'Проверьте правильно ли вы вписали данные',
+          btnOkOnPress: (){
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();},
+          btnOkColor: Colors.red
+      ).show();
+      print('Ошибка отправки данных в Firebase: $e');
+    }
+  }
   
   
   @override
@@ -182,7 +238,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         width: screenWidth,
-        height: 350,
+        height: 450,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -233,7 +289,8 @@ class _CreateTeacherState extends State<CreateTeacher> {
               ),
             ),
             CustomInputField(texting: 'Введите ФИО', controller: _nameController),
-            CustomInputField(texting: 'Введите должность', controller: _membershipController),
+            CustomInputField(texting: 'Введите Почту', controller: _emailTeacher),
+            CustomInputField(texting: 'Введите пароль', controller: _passwordTeacher),
             SizedBox(height: 20,),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -250,6 +307,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
                     ),
                   ),
                   onPressed: (){
+                    sendDataToFirebaseTeacher();
                     print('CREATED TEACHER');
                   },
                 ),
@@ -276,6 +334,60 @@ class _CreateStudentState extends State<CreateStudent> {
   TextEditingController _emailControllerStudent=TextEditingController();
   TextEditingController _gradeControler=TextEditingController();
   TextEditingController _passwordControllerStudent= TextEditingController();
+
+
+  void sendDataToFirebaseStudent() async {
+    try {
+      FirebaseAuth auth = FirebaseAuth.instance;
+      DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+
+      String fio = _fioController.text;
+      String grade = _gradeControler.text;
+      String email = _emailControllerStudent.text;
+      String password = _passwordControllerStudent.text;
+
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      String uid = userCredential.user!.uid;
+
+      dbRef.child('users').child(uid).set({
+        'fio': fio,
+        'grade': grade,
+        'email': email,
+        'role': 'Student'
+      });
+
+      AwesomeDialog(
+          context: context,
+        dialogType: DialogType.success,
+        animType: AnimType.topSlide,
+        showCloseIcon:false,
+        title: 'Вы успешно добавили ученика!!',
+        btnOkOnPress: (){
+            Navigator.of(context).pop();
+        Navigator.of(context).pop();}
+      ).show();
+
+      print('Данные успешно отправлены в Firebase.');
+    } catch (e) {
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.topSlide,
+          showCloseIcon:false,
+          title: 'Что то пошло не так :(',
+          desc: 'Проверьте правильно ли вы вписали данные',
+          btnOkOnPress: (){
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();},
+          btnOkColor: Colors.red
+      ).show();
+      print('Ошибка отправки данных в Firebase: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -373,14 +485,14 @@ class _CreateStudentState extends State<CreateStudent> {
                     ),
                   ),
                   onPressed: (){
+                    sendDataToFirebaseStudent();
+
                     print('CREATED STUDENT');
                   },
                 ),
               ),
             )
-
           ],
-
         ),
       ),
     );
