@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UsersListPage extends StatelessWidget {
   const UsersListPage({Key? key});
@@ -9,60 +8,106 @@ class UsersListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseDatabase.instance.reference().child("users").onValue,
+      stream: FirebaseDatabase.instance.ref().child('users').onValue,
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
-          return const Center(
-            child: Text("Нет резюме"),
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Ошибка получения данных"),
           );
         }
 
-        final data = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-        final users = data.entries.map((entry) => User.fromMap(entry.value)).toList();
+        if (!snapshot.hasData || snapshot.data?.snapshot?.value == null) {
+          return Center(
+            child: Text("Нет данных"),
+          );
+        }
+
+        final users = <User>[];
+        final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
+        if (snapshotValue is Map<dynamic, dynamic>) {
+          final data = snapshotValue as Map<dynamic, dynamic>;
+          data.forEach((key, value) {
+            if (value is Map<dynamic, dynamic>) {
+              users.add(User.fromMap(key, value));
+            } else {
+              print("Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
+            }
+          });
+        } else {
+          print("Неправильный тип данных: ${snapshotValue.runtimeType}");
+          return Center(
+            child: Text("Нет данных"),
+          );
+        }
 
         return ListView.builder(
           itemCount: users.length,
           itemBuilder: (BuildContext context, int index) {
             final user = users[index];
             return UserTile(
-                name: user.fio,
-                email: user.email,
-                role: user.role,
+              onDelete: () => _deleteUser(user),
+              name: user.fio,
+              email: user.email,
+              role: user.role,
             );
           },
         );
       },
     );
   }
+
+  void _deleteUser(User user) {
+    FirebaseDatabase.instance
+        .reference()
+        .child("users")
+        .child(user.id)
+        .remove()
+        .then((value) {
+      print("User deleted successfully");
+    }).catchError((error) {
+      print("Failed to delete user: $error");
+    });
+  }
 }
 
 class User {
+  final String id;
   final String fio;
   final String grade;
   final String role;
   final String email;
 
   User({
+    required this.id,
     required this.fio,
     required this.grade,
     required this.role,
     required this.email,
   });
 
-  factory User.fromMap(Map<dynamic, dynamic> map) {
+  factory User.fromMap(String id, Map<dynamic, dynamic> data) {
     return User(
-      fio: map['fio'] ?? '',
-      grade: map['grade'] ?? '',
-      role: map['role'] ?? '',
-      email: map['email'] ?? '',
+      id: id,
+      fio: data['fio'] ?? '',
+      grade: data['grade'] ?? '',
+      role: data['role'] ?? '',
+      email: data['email'] ?? '',
     );
   }
 }
 
 class UserTile extends StatelessWidget {
-  UserTile(
-      {super.key, required this.name, required this.email, required this.role});
+  UserTile({
+    Key? key,
+    required this.name,
+    required this.email,
+    required this.role,
+    required this.onDelete,
+  });
+
   final String name, email, role;
+  final VoidCallback onDelete;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -77,9 +122,10 @@ class UserTile extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color.fromARGB(255, 242, 241, 247),
-                border: Border.all(color: Colors.grey, width: 0.5)),
+              borderRadius: BorderRadius.circular(10),
+              color: Color.fromARGB(255, 242, 241, 247),
+              border: Border.all(color: Colors.grey, width: 0.5),
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,7 +152,7 @@ class UserTile extends StatelessWidget {
                         right: 0,
                         child: IconButton(
                           icon: Icon(Icons.delete),
-                          onPressed: () {},
+                          onPressed: onDelete,
                         ),
                       ),
                     ],
