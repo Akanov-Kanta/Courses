@@ -80,7 +80,7 @@ class _CreateNewChapterState extends State<CreateNewChapter> {
               ),
             ),
             CustomInputField(texting: 'Введите название раздела', controller: _nameOfTheChapter),
-            CustomDropDown(texting: 'Выберите раздел ', selectedOption: _selected, options: _chapter),
+            CustomDropDown(texting: 'Выберите раздел ', selectedOption: _selected, options: _chapter, defaultOptions: [],),
             SizedBox(height: 30,),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30),

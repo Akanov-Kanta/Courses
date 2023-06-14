@@ -1,29 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+class UsersListPage extends StatelessWidget {
+  const UsersListPage({Key? key});
 
-class UsersListPage extends StatefulWidget {
-  const UsersListPage({super.key});
-
-  @override
-  State<UsersListPage> createState() => _UsersListPageState();
-}
-
-class _UsersListPageState extends State<UsersListPage> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.all(25),
-      children: [
-        GestureDetector(
-          child: UserTile(
-              name: 'Ғалымжан Арсен Ренатұлы',
-              email: 'galymjan_a1101@ptr.nis.edu.kz',
-              role: 'Ученик 9D'),
-          onTap: (){
-          }
-        )
-      ],
+    return StreamBuilder(
+      stream: FirebaseDatabase.instance.reference().child("users").onValue,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+          return const Center(
+            child: Text("Нет резюме"),
+          );
+        }
+
+        final data = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+        final users = data.entries.map((entry) => User.fromMap(entry.value)).toList();
+
+        return ListView.builder(
+          itemCount: users.length,
+          itemBuilder: (BuildContext context, int index) {
+            final user = users[index];
+            return UserTile(
+                name: user.fio,
+                email: user.email,
+                role: user.role,
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class User {
+  final String fio;
+  final String grade;
+  final String role;
+  final String email;
+
+  User({
+    required this.fio,
+    required this.grade,
+    required this.role,
+    required this.email,
+  });
+
+  factory User.fromMap(Map<dynamic, dynamic> map) {
+    return User(
+      fio: map['fio'] ?? '',
+      grade: map['grade'] ?? '',
+      role: map['role'] ?? '',
+      email: map['email'] ?? '',
     );
   }
 }
@@ -53,38 +84,33 @@ class UserTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 10,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Futura',
+                SizedBox(
+                  height: 32,
+                  child: Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Futura',
+                            ),
                           ),
+                        ],
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {},
                         ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: SizedBox(
-                        width: double.infinity,
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: SizedBox(
-                          width: double.infinity,
-                          child: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {},
-                          )),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 5,
