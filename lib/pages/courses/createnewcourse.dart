@@ -8,51 +8,75 @@ class CreateNewCourse extends StatefulWidget {
 }
 
 class _CreateNewCourseState extends State<CreateNewCourse> {
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth;
-    double screenHeight;
-    final TextEditingController _courseName = TextEditingController();
-    final TextEditingController _courseTeacher = TextEditingController();
-    final TextEditingController _courseCabinet = TextEditingController();
-    final TextEditingController _courseAmount = TextEditingController();
+  late double screenWidth;
+  late double screenHeight;
+  final TextEditingController _courseName = TextEditingController();
+  final TextEditingController _courseTeacher = TextEditingController();
+  final TextEditingController _courseCabinet = TextEditingController();
+  final TextEditingController _courseAmount = TextEditingController();
 
-    List<String> _dayweek = [
-      'Понедельник',
-      'Вторник',
-      'Среда',
-      'Четверг',
-      ' Пятница',
-      'Суббота',
-      'Воскресенье'
-    ];
+  List<String> _dayweek = [
+    'Понедельник',
+    'Вторник',
+    'Среда',
+    'Четверг',
+    ' Пятница',
+    'Суббота',
+    'Воскресенье'
+  ];
 
-    Map<String?, TextEditingController> timeList = {
-      null: TextEditingController()
-    };
-    List<TimeTile> timeTileList = [];
-    remove() {
+  List<String?> timeListOptions = [null];
+  List<TextEditingController> timeListControllers = [TextEditingController()];
+  List<TimeTile> timeTileList = [];
+
+  remove() {
+    if (timeTileList.length > 1) {
       setState(() {
         timeTileList.removeLast();
-        timeList.remove(timeList.keys.elementAt(timeList.length - 1));
       });
+      timeListOptions.removeLast();
+      timeListControllers.removeLast();
     }
+  }
 
-    add() {
-      print('aaaddadada');
+  add() {
+    if (timeTileList.length < 7) {
+      timeListOptions.add(null);
+      timeListControllers.add(TextEditingController());
       setState(() {
-        timeList.addAll({null: TextEditingController()});
         timeTileList.add(TimeTile(
-            timeList: timeList,
-            options: _dayweek,
-            index: timeList.length - 1,
-            add: add,
-            remove: remove));
+          timeListControllers: timeListControllers,
+          timeListOptions: timeListOptions,
+          options: _dayweek,
+          index: timeListOptions.length - 1,
+        ));
       });
-      print(timeList);
-      print(timeTileList);
     }
+  }
 
+  @override
+  void initState() {
+    timeTileList.add(
+      TimeTile(
+        timeListControllers: timeListControllers,
+        timeListOptions: timeListOptions,
+        options: _dayweek,
+        index: 0,
+      ),
+    );
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timeListControllers.map((e) => e.dispose());
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     if (MediaQuery.of(context).size.width > 600) {
       screenWidth = 500;
       screenHeight = MediaQuery.of(context).size.height;
@@ -60,7 +84,6 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
       screenWidth = MediaQuery.of(context).size.width;
       screenHeight = MediaQuery.of(context).size.height;
     }
-
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
@@ -112,24 +135,23 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                     CustomInputField(
                         texting: 'Введите максимальное количество участников',
                         controller: _courseAmount),
-                    Divider(
-                      thickness: 2,
+                    ...timeTileList,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              add();
+                            },
+                            icon: Icon(Icons.add)),
+                        IconButton(
+                            onPressed: () {
+                              remove();
+                            },
+                            icon: Icon(Icons.remove)),
+                      ],
                     ),
-                    CustomDropDown(
-                      texting: 'Выберите день недели',
-                      selectedOption: timeList.keys.elementAt(0),
-                      options: _dayweek,
-                    ),
-                    CustomInputField(
-                        texting: 'Введите время на день',
-                        controller: timeList.values.elementAt(0)),
-                    IconButton(
-                        onPressed: () {
-                          print('addddd');
-                          add();
-                        },
-                        icon: Icon(Icons.add)),
-                    ...timeTileList
                   ],
                 ),
               ),
@@ -223,13 +245,15 @@ class CustomInputField extends StatelessWidget {
 class CustomDropDown extends StatelessWidget {
   final String texting;
   String? selectedOption;
-  final List<String> options;
+  List<String> options;
+  final List<String> defaultOptions;
 
   CustomDropDown({
     Key? key,
     required this.texting,
     required this.selectedOption,
     required this.options,
+    required this.defaultOptions,
   }) : super(key: key);
 
   @override
@@ -251,6 +275,9 @@ class CustomDropDown extends StatelessWidget {
             child: DropdownButtonFormField<String>(
               value: selectedOption,
               onChanged: (String? newValue) {
+                print('Q');
+                if(selectedOption != null) options.insert(defaultOptions.indexOf(selectedOption!), selectedOption!);
+                options.remove(newValue);
                 selectedOption = newValue;
               },
               items: options.map<DropdownMenuItem<String>>(
@@ -296,18 +323,17 @@ class CustomDropDown extends StatelessWidget {
 }
 
 class TimeTile extends StatelessWidget {
-  TimeTile(
-      {super.key,
-      required this.timeList,
-      required this.options,
-      required this.index,
-      required this.add,
-      required this.remove});
-  Map<String?, TextEditingController> timeList;
+  TimeTile({
+    super.key,
+    required this.timeListOptions,
+    required this.timeListControllers,
+    required this.options,
+    required this.index,
+  });
+  List<String?> timeListOptions;
+  List<TextEditingController> timeListControllers;
   List<String> options;
   int index;
-  Function() add;
-  Function() remove;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -317,28 +343,13 @@ class TimeTile extends StatelessWidget {
         ),
         CustomDropDown(
           texting: 'Выберите день недели',
-          selectedOption: timeList.keys.elementAt(index),
+          selectedOption: timeListOptions.elementAt(index),
           options: options,
+          defaultOptions: List.from(options),
         ),
         CustomInputField(
             texting: 'Введите время на день',
-            controller: timeList.values.elementAt(index)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            IconButton(
-                onPressed: () {
-                  add();
-                },
-                icon: Icon(Icons.add)),
-            IconButton(
-                onPressed: () {
-                  remove();
-                },
-                icon: Icon(Icons.remove)),
-          ],
-        ),
+            controller: timeListControllers.elementAt(index)),
       ],
     );
   }

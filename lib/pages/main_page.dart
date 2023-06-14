@@ -89,21 +89,24 @@ class _MainPageState extends State<MainPage> {
                   ? FloatingActionButton(
                       onPressed: () {
                         print("ADMIN COURSES");
-                        showDialog(context: context, builder: (context){
-                          return CreateNewCourse();
-                        });
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return CreateNewCourse();
+                            });
                       },
                       child: Icon(Icons.my_library_add_rounded),
                       backgroundColor: DarkPurple,
                     )
                   : currentPage.runtimeType == UsersListPage
-                  ? FloatingActionButton(
-                      onPressed: () {
-                        print("ADMIN PEOPLE");
-                      },
-                      child: Icon(Icons.group_add_rounded),
-                      backgroundColor: DarkPurple,
-                    ) : null)
+                      ? FloatingActionButton(
+                          onPressed: () {
+                            print("ADMIN PEOPLE");
+                          },
+                          child: Icon(Icons.group_add_rounded),
+                          backgroundColor: DarkPurple,
+                        )
+                      : null)
           : null,
       body: currentPage,
       bottomNavigationBar: BottomBar(
