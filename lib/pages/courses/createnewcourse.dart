@@ -108,15 +108,19 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                   ),
                 ],
               ),
-              child: Center(
-                child: Text(
-                  'Создание нового курса',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontFamily: 'Futura',
-                      fontWeight: FontWeight.w300),
-                ),
+              child: Row(
+                children: [
+                  IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(Icons.close)),
+                  SizedBox(width: 15,),
+                  Text(
+                    'Создание нового курса',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontFamily: 'Futura',
+                        fontWeight: FontWeight.w300),
+                  ),
+                ],
               ),
             ),
             Expanded(
