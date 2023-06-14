@@ -80,7 +80,46 @@ class _CreateNewChapterState extends State<CreateNewChapter> {
               ),
             ),
             CustomInputField(texting: 'Введите название раздела', controller: _nameOfTheChapter),
-            CustomDropDown(texting: 'Выберите раздел ', selectedOption: _selected, options: _chapter),
+            SizedBox(height: 10,),
+            Center(child: SizedBox(child: Text(
+              'Выберите раздел',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'Futura',
+                fontSize: 18,
+              ),
+            ),)),
+            SizedBox(height: 8,),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: DropdownButtonFormField<String>(
+                value: _selected,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Color.fromRGBO(46, 46, 93, 0.04),
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(30)
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: Colors.black)
+                  ),
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selected = newValue!;
+                  });
+                },
+                items: _chapter.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value,style: TextStyle(color: Colors.black),),
+                  );
+                }).toList(),
+              ),
+            ),
             SizedBox(height: 30,),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30),
