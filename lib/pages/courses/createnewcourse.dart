@@ -85,15 +85,25 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                   ),
                 ],
               ),
-              child: Center(
-                child: Text(
-                  'Создание нового курса',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontFamily: 'Futura',
-                      fontWeight: FontWeight.w300),
-                ),
+              child: Row(
+                children: [
+                  IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(Icons.close,size: 25,),),
+                  Padding(
+                    padding: EdgeInsets.only(left: 25),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Создание нового курса',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontFamily: 'Futura',
+                            fontWeight: FontWeight.w300),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -115,14 +125,15 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                     Divider(
                       thickness: 2,
                     ),
+
+                    CustomInputField(
+                        texting: 'Введите время на день',
+                        controller: timeList.values.elementAt(0)),
                     CustomDropDown(
                       texting: 'Выберите день недели',
                       selectedOption: timeList.keys.elementAt(0),
                       options: _dayweek,
                     ),
-                    CustomInputField(
-                        texting: 'Введите время на день',
-                        controller: timeList.values.elementAt(0)),
                     IconButton(
                         onPressed: () {
                           print('addddd');
@@ -249,6 +260,7 @@ class CustomDropDown extends StatelessWidget {
           Padding(
             padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
             child: DropdownButtonFormField<String>(
+
               value: selectedOption,
               onChanged: (String? newValue) {
                 selectedOption = newValue;
@@ -283,7 +295,7 @@ class CustomDropDown extends StatelessWidget {
                 ),
               ),
               style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Fututra',
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
                   color: Colors.black),

@@ -1,6 +1,9 @@
 import 'package:courses/const/constants.dart';
+import 'package:courses/createnewchapter.dart';
+import 'package:courses/createnewuser.dart';
 import 'package:courses/pages/courses/all_topics.dart';
 import 'package:courses/pages/courses/teacherCourses.dart';
+
 import 'package:courses/pages/courses/topic_courses.dart';
 import 'package:courses/pages/schedule.dart';
 import 'package:courses/pages/users_page.dart';
@@ -80,7 +83,9 @@ class _MainPageState extends State<MainPage> {
           ? (currentPage.runtimeType == Topics
               ? FloatingActionButton(
                   onPressed: () {
-                    print("ADMIN TOPICS");
+                    showDialog(context: context, builder: (context){
+                      return CreateNewChapter();
+                    });
                   },
                   child: Icon(Icons.create_new_folder_rounded),
                   backgroundColor: DarkPurple,
@@ -88,7 +93,6 @@ class _MainPageState extends State<MainPage> {
               : currentPage.runtimeType == TopicCourses
                   ? FloatingActionButton(
                       onPressed: () {
-                        print("ADMIN COURSES");
                         showDialog(context: context, builder: (context){
                           return CreateNewCourse();
                         });
@@ -99,7 +103,9 @@ class _MainPageState extends State<MainPage> {
                   : currentPage.runtimeType == UsersListPage
                   ? FloatingActionButton(
                       onPressed: () {
-                        print("ADMIN PEOPLE");
+                        showDialog(context: context, builder: (context){
+                          return CreateNewUser();
+                        });
                       },
                       child: Icon(Icons.group_add_rounded),
                       backgroundColor: DarkPurple,
