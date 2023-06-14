@@ -115,16 +115,16 @@ class _CreateNewUserState extends State<CreateNewUser> {
                         controller: _email),
                     CustomInputField(
                         texting: 'Пороль ученика', controller: _password),
+                    CustomDropDown(
+                        texting: "Выберите роль",
+                        selectedOption: _currencies[0],
+                        options: _currencies),
                     IconButton(
                         onPressed: () {
                           sendDataToFirebase();
                           print("why");
                         },
                         icon: Icon(Icons.add)),
-                    CustomDropDown(
-                        texting: "Выберите роль",
-                        selectedOption: _currencies[0],
-                        options: _currencies)
                   ],
                 ),
               ),
