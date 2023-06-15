@@ -250,18 +250,18 @@ class CustomDropDown extends StatelessWidget {
   final String texting;
   String? selectedOption;
   List<String> options;
-  final List<String> defaultOptions;
+  late List<String> defaultOptions;
 
   CustomDropDown({
     Key? key,
     required this.texting,
     required this.selectedOption,
     required this.options,
-    required this.defaultOptions,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    defaultOptions = List.from(options);
     return Container(
       width: double.infinity,
       height: 100,
@@ -349,7 +349,6 @@ class TimeTile extends StatelessWidget {
           texting: 'Выберите день недели',
           selectedOption: timeListOptions.elementAt(index),
           options: options,
-          defaultOptions: List.from(options),
         ),
         CustomInputField(
             texting: 'Введите время на день',
