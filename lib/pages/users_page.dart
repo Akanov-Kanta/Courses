@@ -60,7 +60,7 @@ class UsersListPage extends StatelessWidget {
   void _deleteUser(User user) async {
     // Delete from Firebase Realtime Database
     FirebaseDatabase.instance
-        .reference()
+        .ref()
         .child("users")
         .child(user.id)
         .remove()

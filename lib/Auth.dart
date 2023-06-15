@@ -25,11 +25,11 @@ class _AuthPageState extends State<AuthPage> {
             User? user = FirebaseAuth.instance.currentUser;
             String? userId = user?.uid;
 
-            return StreamBuilder(
-              stream: FirebaseDatabase.instance.ref().child('users').child(userId!).onValue,
+            return FutureBuilder(
+              future: FirebaseDatabase.instance.ref().child('users').child(userId!).get(),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
-                  dynamic userData = snapshot.data!.snapshot.value;
+                if (snapshot.hasData && snapshot.data!.value != null && snapshot.connectionState == ConnectionState.done) {
+                  dynamic userData = snapshot.data!.value;
                   String? role = userData['role'];
                   print(role);
 
@@ -44,13 +44,7 @@ class _AuthPageState extends State<AuthPage> {
 
                 } else {
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                      ],
-                    )
+                    child: CircularProgressIndicator()
                   );
                 }
               },
