@@ -338,20 +338,19 @@ class _CreateStudentState extends State<CreateStudent> {
 
   void sendDataToFirebaseStudent() async {
     try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-
       String fio = _fioController.text;
       String grade = _gradeControler.text;
       String email = _emailControllerStudent.text;
       String password = _passwordControllerStudent.text;
 
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+      // Создаем аккаунт студента
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      String uid = userCredential.user!.uid;
+      DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+      String uid = FirebaseAuth.instance.currentUser!.uid;
 
       dbRef.child('users').child(uid).set({
         'fio': fio,
@@ -359,7 +358,10 @@ class _CreateStudentState extends State<CreateStudent> {
         'email': email,
         'role': 'Student'
       });
-
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: "test@gmail.com", // Email админского аккаунта
+        password: "test123", // Пароль админского аккаунта
+      );
       AwesomeDialog(
           context: context,
         dialogType: DialogType.success,

@@ -81,6 +81,10 @@ class UsersListPage extends StatelessWidget {
     } catch (error) {
       print("Failed to delete user from Firebase Authentication: $error");
     }
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: "test@gmail.com", // Email админского аккаунта
+      password: "test123", // Пароль админского аккаунта
+    );
   }
 }
 
