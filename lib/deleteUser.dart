@@ -18,16 +18,16 @@ class _CreateNewUserState extends State<CreateNewUser> {
   @override
   Widget build(BuildContext context) {
 
-  double screenWidth;
-  double screenHeight;
+    double screenWidth;
+    double screenHeight;
 
-  if (MediaQuery.of(context).size.width > 600) {
-    screenWidth = 500;
-    screenHeight = MediaQuery.of(context).size.height;
-  } else {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
-  }
+    if (MediaQuery.of(context).size.width > 600) {
+      screenWidth = 500;
+      screenHeight = MediaQuery.of(context).size.height;
+    } else {
+      screenWidth = MediaQuery.of(context).size.width;
+      screenHeight = MediaQuery.of(context).size.height;
+    }
 
     return Dialog(
       child: Container(
@@ -186,7 +186,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
 
       dbRef.child('users').child(uid).set({
         'fio': fio,
-        'password': password,
+
         'email': email,
         'role': 'Teacher'
       });
@@ -218,8 +218,8 @@ class _CreateTeacherState extends State<CreateTeacher> {
       print('Ошибка отправки данных в Firebase: $e');
     }
   }
-  
-  
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -233,7 +233,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
       screenWidth = MediaQuery.of(context).size.width;
       screenHeight = MediaQuery.of(context).size.height;
     }
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
@@ -315,7 +315,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
             )
           ],
         ),
-        
+
       ),
     );
   }
@@ -328,69 +328,6 @@ class CreateStudent extends StatefulWidget {
 }
 
 class _CreateStudentState extends State<CreateStudent> {
-
-
-  TextEditingController _fioController =TextEditingController();
-  TextEditingController _emailControllerStudent=TextEditingController();
-  TextEditingController _gradeControler=TextEditingController();
-  TextEditingController _passwordControllerStudent= TextEditingController();
-
-
-  void sendDataToFirebaseStudent() async {
-    try {
-      String fio = _fioController.text;
-      String grade = _gradeControler.text;
-      String email = _emailControllerStudent.text;
-      String password = _passwordControllerStudent.text;
-
-      // Создаем аккаунт студента
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      DatabaseReference dbRef = FirebaseDatabase.instance.ref();
-      String uid = FirebaseAuth.instance.currentUser!.uid;
-
-      dbRef.child('users').child(uid).set({
-        'fio': fio,
-        'grade': grade,
-        'email': email,
-        'role': 'Student',
-        'password': password,
-      });
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: "test@gmail.com", // Email админского аккаунта
-        password: "test123", // Пароль админского аккаунта
-      );
-      AwesomeDialog(
-          context: context,
-        dialogType: DialogType.success,
-        animType: AnimType.topSlide,
-        showCloseIcon:false,
-        title: 'Вы успешно добавили ученика!!',
-        btnOkOnPress: (){
-            Navigator.of(context).pop();
-        Navigator.of(context).pop();}
-      ).show();
-
-      print('Данные успешно отправлены в Firebase.');
-    } catch (e) {
-      AwesomeDialog(
-          context: context,
-          dialogType: DialogType.error,
-          animType: AnimType.topSlide,
-          showCloseIcon:false,
-          title: 'Что то пошло не так :(',
-          desc: 'Проверьте правильно ли вы вписали данные',
-          btnOkOnPress: (){
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();},
-          btnOkColor: Colors.red
-      ).show();
-      print('Ошибка отправки данных в Firebase: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -407,97 +344,7 @@ class _CreateStudentState extends State<CreateStudent> {
     }
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Container(
-        width: screenWidth,
-        height: 600,
-        decoration: BoxDecoration(
-          color: Colors.white54,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white54,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 1,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(Icons.arrow_back_ios, size: 25),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Создание нового ученика',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontFamily: 'Futura',
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            CustomInputField(texting: 'Введите ФИО', controller: _fioController),
-            CustomInputField(texting: 'Введите класс ученика', controller: _gradeControler),
-            CustomInputField(texting: 'Введите почту ученика', controller: _emailControllerStudent),
-            CustomInputField(texting: 'Введите пароль для ученика', controller: _passwordControllerStudent),
-            SizedBox(height: 20,),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                height: 40,
-                width: double.infinity,
-                child: ElevatedButton(
-                  child: Text('Создать',style: TextStyle(fontFamily: 'Futura',fontSize: 20,color: Colors.white),),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.black, // Replace with your desired button color
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: (){
-                    sendDataToFirebaseStudent();
-
-                    print('CREATED STUDENT');
-                  },
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
+      
     );
   }
 }

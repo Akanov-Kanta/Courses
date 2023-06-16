@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import '../utils.dart';
+
 class UsersListPage extends StatefulWidget {
   const UsersListPage({Key? key});
 
@@ -85,7 +87,7 @@ class _UsersListPageState extends State<UsersListPage> {
                 itemCount: users.length,
                 itemBuilder: (BuildContext context, int index) {
                   final user = users[index];
-                  if(user.fio.toLowerCase().contains(searchController.text.toLowerCase())){
+                  if(user.fio.toLowerCase().contains(searchController.text.toLowerCase()) || user.email.toLowerCase().contains(searchController.text.toLowerCase()) || user.grade.toLowerCase().contains(searchController.text.toLowerCase())){
                     return UserTile(
                       onDelete: () => _deleteUser(user),
                       name: user.fio,
@@ -117,10 +119,16 @@ class _UsersListPageState extends State<UsersListPage> {
       print("Failed to delete user from Realtime Database: $error");
     });
 
-    // Delete from Firebase Authentication
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: user.email, // Email админского аккаунта
+      password: user.password, // Пароль админского аккаунта
+    );
+
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null && currentUser.uid == user.id) {
+        Authcheck = true;
+
         // Delete the currently authenticated user
         await currentUser.delete();
         print("User deleted successfully from Firebase Authentication");
@@ -132,6 +140,7 @@ class _UsersListPageState extends State<UsersListPage> {
       email: "test@gmail.com", // Email админского аккаунта
       password: "test123", // Пароль админского аккаунта
     );
+    Authcheck = false;
   }
 }
 
@@ -141,6 +150,7 @@ class User {
   final String grade;
   final String role;
   final String email;
+  final String password;
 
   User({
     required this.id,
@@ -148,10 +158,12 @@ class User {
     required this.grade,
     required this.role,
     required this.email,
+    required this.password
   });
 
   factory User.fromMap(String id, Map<dynamic, dynamic> data) {
     return User(
+      password: data['password'] ?? '',
       id: id,
       fio: data['fio'] ?? '',
       grade: data['grade'] ?? '',
