@@ -36,7 +36,7 @@ class _UsersListPageState extends State<UsersListPage> {
                 ),
               ),
               filled: true,
-              fillColor: Color.fromARGB(255, 242, 241, 247),
+              fillColor: Colors.white,
             ),
             onChanged: (String value) {
               setState(() {
