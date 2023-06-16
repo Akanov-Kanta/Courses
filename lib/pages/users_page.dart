@@ -3,57 +3,104 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class UsersListPage extends StatelessWidget {
+class UsersListPage extends StatefulWidget {
   const UsersListPage({Key? key});
 
   @override
+  State<UsersListPage> createState() => _UsersListPageState();
+}
+
+class _UsersListPageState extends State<UsersListPage> {
+  final TextEditingController searchController = TextEditingController();
+  String searchResult = '';
+  @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseDatabase.instance.ref().child('users').onValue,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text("Ошибка получения данных"),
-          );
-        }
+    return Column(
+      children: [
+        SizedBox(
+          height: 10,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              hintText: 'Поиск пользователя',
+              suffixIcon: Icon(Icons.search),
+              contentPadding: EdgeInsets.all(10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  style: BorderStyle.none,
+                  width: 0,
+                ),
+              ),
+              filled: true,
+              fillColor: Color.fromARGB(255, 242, 241, 247),
+            ),
+            onChanged: (String value) {
+              setState(() {
+                searchResult = value;
+              });
+            },
+          ),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Expanded(
+          child:  StreamBuilder(
+            stream: FirebaseDatabase.instance.ref().child('users').onValue,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text("Ошибка получения данных"),
+                );
+              }
 
-        if (!snapshot.hasData || snapshot.data?.snapshot?.value == null) {
-          return Center(
-            child: Text("Нет данных"),
-          );
-        }
+              if (!snapshot.hasData || snapshot.data?.snapshot?.value == null) {
+                return Center(
+                  child: Text("Нет данных"),
+                );
+              }
+              final List<User> users = [];
 
-        final users = <User>[];
-        final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
-        if (snapshotValue is Map<dynamic, dynamic>) {
-          final data = snapshotValue as Map<dynamic, dynamic>;
-          data.forEach((key, value) {
-            if (value is Map<dynamic, dynamic>) {
-              users.add(User.fromMap(key, value));
-            } else {
-              print("Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
-            }
-          });
-        } else {
-          print("Неправильный тип данных: ${snapshotValue.runtimeType}");
-          return Center(
-            child: Text("Нет данных"),
-          );
-        }
-
-        return ListView.builder(
-          itemCount: users.length,
-          itemBuilder: (BuildContext context, int index) {
-            final user = users[index];
-            return UserTile(
-              onDelete: () => _deleteUser(user),
-              name: user.fio,
-              email: user.email,
-              role: user.role,
-            );
-          },
-        );
-      },
+              final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
+              if (snapshotValue is Map<dynamic, dynamic>) {
+                final data = snapshotValue as Map<dynamic, dynamic>;
+                data.forEach((key, value) {
+                  if (value is Map<dynamic, dynamic>) {
+                    users.add(User.fromMap(key, value));
+                  } else {
+                    print("Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
+                  }
+                });
+              } else {
+                print("Неправильный тип данных: ${snapshotValue.runtimeType}");
+                return Center(
+                  child: Text("Нет данных"),
+                );
+              }
+              return ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final user = users[index];
+                  if(user.fio.toLowerCase().contains(searchController.text.toLowerCase())){
+                    return UserTile(
+                      onDelete: () => _deleteUser(user),
+                      name: user.fio,
+                      email: user.email,
+                      role: user.role,
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
