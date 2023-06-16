@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:courses/pages/LoginPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:courses/pages/courses/teacherCourses.dart';
+import 'package:courses/utils.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -21,36 +22,49 @@ class _AuthPageState extends State<AuthPage> {
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            User? user = FirebaseAuth.instance.currentUser;
-            String? userId = user?.uid;
-
-            return FutureBuilder(
-              future: FirebaseDatabase.instance.ref().child('users').child(userId!).get(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data!.value != null && snapshot.connectionState == ConnectionState.done) {
-                  dynamic userData = snapshot.data!.value;
-                  String? role = userData['role'];
-                  print(role);
-
-                  if (role == 'Student') {
-                    userRole = Roles.student;
-                  } else if (role == 'Teacher') {
-                    userRole = Roles.teacher;
-                  } else if (role == 'Admin') {
-                    userRole = Roles.admin;
-                  }
-                  return MainPage();
-
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator()
-                  );
-                }
-              },
+          if (Authcheck) {
+            return Center(
+              child: CircularProgressIndicator(),
             );
-          } else {
-            return LoginPage();
+          }
+          else{
+            if (snapshot.hasData) {
+              User? user = FirebaseAuth.instance.currentUser;
+              String? userId = user?.uid;
+
+              return StreamBuilder(
+                stream: FirebaseDatabase.instance.ref().child('users').child(userId!).onValue,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+                    dynamic userData = snapshot.data!.snapshot.value;
+                    String? role = userData['role'];
+                    print(role);
+
+                    if (role == 'Student') {
+                      userRole = Roles.student;
+                    } else if (role == 'Teacher') {
+                      userRole = Roles.teacher;
+                    } else if (role == 'Admin') {
+                      userRole = Roles.admin;
+                    }
+                    return MainPage();
+
+                  } else {
+                    return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        )
+                    );
+                  }
+                },
+              );
+            } else {
+              return LoginPage();
+            }
           }
         },
       ),

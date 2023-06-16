@@ -80,3 +80,5 @@ TextStyle SafeGoogleFont(
     );
   }
 }
+
+bool Authcheck = false;
