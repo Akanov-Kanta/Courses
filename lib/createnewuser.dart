@@ -192,6 +192,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
       });
       AwesomeDialog(
           context: context,
+          width: MediaQuery.of(context).size.width/2,
           dialogType: DialogType.success,
           animType: AnimType.topSlide,
           showCloseIcon:false,
@@ -205,6 +206,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
     } catch (e) {
       AwesomeDialog(
           context: context,
+          width: MediaQuery.of(context).size.width/2,
           dialogType: DialogType.error,
           animType: AnimType.topSlide,
           showCloseIcon:false,
@@ -365,6 +367,7 @@ class _CreateStudentState extends State<CreateStudent> {
       );
       AwesomeDialog(
           context: context,
+        width: MediaQuery.of(context).size.width/2,
         dialogType: DialogType.success,
         animType: AnimType.topSlide,
         showCloseIcon:false,
@@ -378,6 +381,7 @@ class _CreateStudentState extends State<CreateStudent> {
     } catch (e) {
       AwesomeDialog(
           context: context,
+          width: MediaQuery.of(context).size.width/2,
           dialogType: DialogType.error,
           animType: AnimType.topSlide,
           showCloseIcon:false,

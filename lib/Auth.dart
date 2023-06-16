@@ -24,7 +24,7 @@ class _AuthPageState extends State<AuthPage> {
         builder: (context, snapshot) {
           if (Authcheck) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: Image.asset('images/PurpleBook.gif'),
             );
           }
           else{
@@ -55,7 +55,7 @@ class _AuthPageState extends State<AuthPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator(),
+                            Image.asset('images/PurpleBook.gif'),
                           ],
                         )
                     );
