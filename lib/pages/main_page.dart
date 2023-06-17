@@ -95,7 +95,7 @@ class _MainPageState extends State<MainPage> {
                   ? FloatingActionButton(
                       onPressed: () {
                         showDialog(context: context, builder: (context){
-                          return CreateNewCourse();
+                          return CreateNewCourse(topicName: (currentPage as TopicCourses).topicName,);
                         });
                       },
                       child: Icon(Icons.my_library_add_rounded),

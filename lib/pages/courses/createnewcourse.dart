@@ -1,8 +1,10 @@
+import 'package:courses/pages/courses/createnewchapter.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class CreateNewCourse extends StatefulWidget {
-  const CreateNewCourse({Key? key}) : super(key: key);
-
+  CreateNewCourse({Key? key, required this.topicName}) : super(key: key);
+  String topicName;
   @override
   State<CreateNewCourse> createState() => _CreateNewCourseState();
 }
@@ -110,8 +112,14 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
               ),
               child: Row(
                 children: [
-                  IconButton(onPressed: (){Navigator.of(context).pop();}, icon: Icon(Icons.close)),
-                  SizedBox(width: 15,),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: Icon(Icons.close)),
+                  SizedBox(
+                    width: 15,
+                  ),
                   Text(
                     'Создание нового курса',
                     textAlign: TextAlign.center,
@@ -155,6 +163,95 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                             },
                             icon: Icon(Icons.remove)),
                       ],
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 30),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            print('''_courseAmount.text.isNotEmpty: ${_courseAmount.text.isNotEmpty} \n
+                                _courseCabinet.text.isNotEmpty: ${_courseCabinet.text.isNotEmpty} \n
+                                _courseName.text.isNotEmpty: ${_courseName.text.isNotEmpty} \n
+                                _courseTeacher.text.isNotEmpty: ${_courseTeacher.text.isNotEmpty} \n
+                                timeListOptions
+                                    .every((element) => element != null): ${timeListOptions
+                                    .every((element) => element != null)} \n
+                                timeListControllers.every(
+                                    (element) => element.text.isNotEmpty): ${timeListControllers.every(
+                                    (element) => element.text.isNotEmpty)} \n''');
+                            print(timeListOptions);
+                            print(timeListControllers.map((e) => e.text).toList());
+                            if (_courseAmount.text.isNotEmpty &&
+                                _courseCabinet.text.isNotEmpty &&
+                                _courseName.text.isNotEmpty &&
+                                _courseTeacher.text.isNotEmpty &&
+                                timeListOptions
+                                    .every((element) => element != null) &&
+                                timeListControllers.every(
+                                    (element) => element.text.isNotEmpty)) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ConfirmationDialog(
+                                      title:
+                                          'Вы точно хотите создать новый курс?',
+                                      onConfirm: () async {
+                                        var ref =
+                                            FirebaseDatabase.instance.ref();
+                                        Map schedule = Map.fromIterables(
+                                            timeListOptions,
+                                            timeListControllers
+                                                .map((e) => e.text)
+                                                .toList());
+                                        ref
+                                            .child(
+                                                'courses/${_courseName.text}')
+                                            .set({
+                                          'cabinet': _courseCabinet.text,
+                                          'max': int.parse(_courseAmount.text),
+                                          'schedule': schedule,
+                                          'teacher': _courseTeacher.text,
+                                        });
+                                        var buf = await ref.child(
+                                                'topics/${widget.topicName}/courses').get();
+                                        print('buf.value.runtimeType: ${buf.value.runtimeType}; topic name: ${widget.topicName}; buf.value: ${buf.value}');
+                                        int num = buf.value == null ? 0 : (buf.value as List).length;
+
+                                        ref
+                                            .child(
+                                                'topics/${widget.topicName}/courses')
+                                            .update({
+                                              num.toString(): _courseName.text,
+                                            });
+                                        Navigator.of(context).pop();
+                                      },
+                                    );
+                                  });
+                            }
+                          },
+                          child: Text(
+                            'Создать',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Futura',
+                              fontSize: 19,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors
+                                .black, // Replace with your desired button color
+                            elevation: 3,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -281,7 +378,9 @@ class CustomDropDown extends StatelessWidget {
             child: DropdownButtonFormField<String>(
               value: selectedOption,
               onChanged: (String? newValue) {
-                if(selectedOption != null) options.insert(defaultOptions.indexOf(selectedOption!), selectedOption!);
+                if (selectedOption != null)
+                  options.insert(
+                      defaultOptions.indexOf(selectedOption!), selectedOption!);
                 options.remove(newValue);
                 selectedOption = newValue;
                 onChange(newValue);
@@ -351,8 +450,8 @@ class TimeTile extends StatelessWidget {
           texting: 'Выберите день недели',
           selectedOption: timeListOptions.elementAt(index),
           options: options,
-          onChange: (value){
-            timeListOptions.insert(index, value);
+          onChange: (value) {
+            timeListOptions.setAll(index, [value]);
           },
         ),
         CustomInputField(

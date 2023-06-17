@@ -72,16 +72,13 @@ class _TopicCoursesState extends State<TopicCourses> {
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.all(10.0),
-                  child: FutureBuilder<DataSnapshot>(
-                      future: FirebaseDatabase.instance
+                  child: StreamBuilder(
+                      stream: FirebaseDatabase.instance
                           .ref()
                           .child('topics/${widget.topicName}/courses')
-                          .get()
-                        ..then((value) {
-                          topicCourses = value.value as List;
-                        }),
+                          .onValue,
                       builder: (BuildContext context,
-                          AsyncSnapshot<DataSnapshot> snapshot) {
+                          AsyncSnapshot<DatabaseEvent> snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return Center(
@@ -94,19 +91,15 @@ class _TopicCoursesState extends State<TopicCourses> {
                             child: Text("Ошибка получения данных"),
                           );
                         }
-
-                        if (!snapshot.hasData || snapshot.data!.value == null) {
-                          return Center(
-                            child: Text("Нет данных"),
-                          );
-                        }
-
+                        topicCourses =
+                              snapshot.data?.snapshot.value == null ? [] : snapshot.data?.snapshot.value as List;
                         return StreamBuilder(
                             stream: FirebaseDatabase.instance
                                 .ref()
                                 .child('courses')
                                 .onValue,
                             builder: (context, snapshot) {
+                              print('RELOAD');
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return Center(
@@ -136,11 +129,13 @@ class _TopicCoursesState extends State<TopicCourses> {
                                     snapshotValue as Map<dynamic, dynamic>;
                                 data.forEach((key, value) async {
                                   if (value is Map<dynamic, dynamic>) {
-                                    if (topicCourses.contains(key)) {
+                                    if (topicCourses!.contains(key)) {
                                       courses.add(Course(
                                           name: key,
-                                          count: (value['students'] as List)
-                                              .length,
+                                          count: value['students'] == null
+                                              ? 0
+                                              : (value['students'] as List)
+                                                  .length,
                                           max: value['max'],
                                           cabinet: value['cabinet'],
                                           teacher: value['teacher']));

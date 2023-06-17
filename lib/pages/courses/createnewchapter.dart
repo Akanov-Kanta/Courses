@@ -1,4 +1,5 @@
 import 'package:courses/pages/courses/createnewcourse.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class CreateNewChapter extends StatefulWidget {
@@ -113,7 +114,6 @@ class _CreateNewChapterState extends State<CreateNewChapter> {
                       height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          print(_selected);
                           if (_nameOfTheChapter.text.isNotEmpty && _selected != null) {
                             showDialog(
                                 context: context,
@@ -121,7 +121,10 @@ class _CreateNewChapterState extends State<CreateNewChapter> {
                                   return ConfirmationDialog(
                                     title:
                                         'Вы точно хотите создать новый раздел?',
-                                    onConfirm: () {
+                                    onConfirm: () async {
+                                      FirebaseDatabase.instance.ref().child('topics/${_nameOfTheChapter.text}').set({
+                                        'razdel': _selected,
+                                      });
                                       Navigator.of(context).pop();
                                     },
                                   );
