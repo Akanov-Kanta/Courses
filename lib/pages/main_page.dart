@@ -1,5 +1,5 @@
 import 'package:courses/const/constants.dart';
-import 'package:courses/createnewchapter.dart';
+import 'package:courses/pages/courses/createnewchapter.dart';
 import 'package:courses/createnewuser.dart';
 import 'package:courses/pages/courses/all_topics.dart';
 import 'package:courses/pages/courses/teacherCourses.dart';

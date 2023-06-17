@@ -76,7 +76,7 @@ class TeacherCourse extends StatelessWidget {
           showDialog(
               context: context,
               builder: (BuildContext context) {
-                return CourseInfoDialog(topicNAME: heading, count: 15,max: 20,);
+                return CourseInfoDialog(topicNAME: heading, count: 15,max: 20, cabinet: 'qqqq', teacher: 'chelovek',);
               }
           );
         },

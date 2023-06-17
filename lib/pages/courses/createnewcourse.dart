@@ -251,12 +251,14 @@ class CustomDropDown extends StatelessWidget {
   String? selectedOption;
   List<String> options;
   late List<String> defaultOptions;
+  final ValueChanged onChange;
 
   CustomDropDown({
     Key? key,
     required this.texting,
     required this.selectedOption,
     required this.options,
+    required this.onChange,
   }) : super(key: key);
 
   @override
@@ -279,10 +281,10 @@ class CustomDropDown extends StatelessWidget {
             child: DropdownButtonFormField<String>(
               value: selectedOption,
               onChanged: (String? newValue) {
-                print('Q');
                 if(selectedOption != null) options.insert(defaultOptions.indexOf(selectedOption!), selectedOption!);
                 options.remove(newValue);
                 selectedOption = newValue;
+                onChange(newValue);
               },
               items: options.map<DropdownMenuItem<String>>(
                 (String value) {
@@ -349,6 +351,9 @@ class TimeTile extends StatelessWidget {
           texting: 'Выберите день недели',
           selectedOption: timeListOptions.elementAt(index),
           options: options,
+          onChange: (value){
+            timeListOptions.insert(index, value);
+          },
         ),
         CustomInputField(
             texting: 'Введите время на день',

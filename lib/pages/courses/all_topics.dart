@@ -1,10 +1,17 @@
 import 'package:courses/pages/courses/topic_courses.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-class Topics extends StatelessWidget {
+class Topics extends StatefulWidget {
   Topics({super.key, required this.setPage, required this.changePage});
   void Function(Widget) setPage;
   void Function(int) changePage;
+
+  @override
+  State<Topics> createState() => _TopicsState();
+}
+
+class _TopicsState extends State<Topics> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -34,42 +41,64 @@ class Topics extends StatelessWidget {
             height: 10,
           ),
           Expanded(
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(10.0),
-              children: [
-                TopicTile(
-                  heading: 'Олимпиадная подготовка',
-                  description: '1 курс / 2 курс',
-                  changePage: changePage,
-                  setPage: setPage,
-                ),
-                TopicTile(
-                  heading: 'Подготовка Научных проектов',
-                  description: '1 курс / 2 курс',
-                  changePage: changePage,
-                  setPage: setPage,
-                ),
-                TopicTile(
-                  heading: 'Дополнительные знания',
-                  description: '1 курс / 2 курс',
-                  changePage: changePage,
-                  setPage: setPage,
-                ),
-                TopicTile(
-                  heading: 'Искусство',
-                  description: 'Кружки',
-                  changePage: changePage,
-                  setPage: setPage,
-                ),
-                TopicTile(
-                  heading: 'Спортивные секции',
-                  description: 'Секции',
-                  changePage: changePage,
-                  setPage: setPage,
-                ),
-              ],
-            ),
+            child: StreamBuilder(
+                stream: FirebaseDatabase.instance.ref().child('topics').onValue,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Image.asset('images/PurpleBook.gif'),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("Ошибка получения данных"),
+                    );
+                  }
+
+                  if (!snapshot.hasData ||
+                      snapshot.data?.snapshot.value == null) {
+                    return Center(
+                      child: Text("Нет данных"),
+                    );
+                  }
+
+                  List<Topic> topics = [];
+
+                  final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
+                  if (snapshotValue is Map<dynamic, dynamic>) {
+                    final data = snapshotValue as Map<dynamic, dynamic>;
+                    data.forEach((key, value) {
+                      if (value is Map<dynamic, dynamic>) {
+                        topics.add(Topic(name: key, razdel: value['razdel']));
+                      } else {
+                        print(
+                            "Неправильный тип данных для раздела с ключом '$key': ${value.runtimeType}");
+                      }
+                    });
+                  } else {
+                    print(
+                        "Неправильный тип данных: ${snapshotValue.runtimeType}");
+                    return Center(
+                      child: Text("Нет данных"),
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    padding: EdgeInsets.all(10.0),
+                    itemCount: topics.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final topic = topics[index];
+                      return TopicTile(
+                        heading: topic.name,
+                        description: topic.razdel,
+                        changePage: widget.changePage,
+                        setPage: widget.setPage,
+                      );
+                    },
+                  );
+                }),
           ),
         ],
       ),
@@ -93,7 +122,10 @@ class TopicTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: GestureDetector(
         onTap: () {
-          setPage(TopicCourses(topicName: heading, changePage: changePage,));
+          setPage(TopicCourses(
+            topicName: heading,
+            changePage: changePage,
+          ));
         },
         child: SizedBox(
           width: double.infinity,
@@ -129,4 +161,10 @@ class TopicTile extends StatelessWidget {
       ),
     );
   }
+}
+
+class Topic {
+  String name;
+  String razdel;
+  Topic({required this.name, required this.razdel});
 }

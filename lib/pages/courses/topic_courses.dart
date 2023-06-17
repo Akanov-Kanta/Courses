@@ -1,5 +1,6 @@
 import 'package:courses/pages/courses/all_topics.dart';
 import 'package:courses/pages/courses/course_info_dialog.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class TopicCourses extends StatefulWidget {
@@ -14,6 +15,7 @@ class TopicCourses extends StatefulWidget {
 class _TopicCoursesState extends State<TopicCourses> {
   @override
   Widget build(BuildContext context) {
+    List topicCourses = [];
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -70,112 +72,108 @@ class _TopicCoursesState extends State<TopicCourses> {
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   padding: EdgeInsets.all(10.0),
-                  child: Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: [
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'Подготовка проектов по информатике',
-                        count: 5,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 19,
-                        max: 20,
-                      ),
-                      TopicCourseTile(
-                        heading: 'laaodow',
-                        count: 20,
-                        max: 20,
-                      ),
-                    ],
-                  ),
+                  child: FutureBuilder<DataSnapshot>(
+                      future: FirebaseDatabase.instance
+                          .ref()
+                          .child('topics/${widget.topicName}/courses')
+                          .get()
+                        ..then((value) {
+                          topicCourses = value.value as List;
+                        }),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<DataSnapshot> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: Image.asset('images/PurpleBook.gif'),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text("Ошибка получения данных"),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.value == null) {
+                          return Center(
+                            child: Text("Нет данных"),
+                          );
+                        }
+
+                        return StreamBuilder(
+                            stream: FirebaseDatabase.instance
+                                .ref()
+                                .child('courses')
+                                .onValue,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: Image.asset('images/PurpleBook.gif'),
+                                );
+                              }
+
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text("Ошибка получения данных"),
+                                );
+                              }
+
+                              if (!snapshot.hasData ||
+                                  snapshot.data?.snapshot.value == null) {
+                                return Center(
+                                  child: Text("Нет данных"),
+                                );
+                              }
+
+                              final List<Course> courses = [];
+
+                              final dynamic snapshotValue =
+                                  snapshot.data!.snapshot.value!;
+                              if (snapshotValue is Map<dynamic, dynamic>) {
+                                final data =
+                                    snapshotValue as Map<dynamic, dynamic>;
+                                data.forEach((key, value) async {
+                                  if (value is Map<dynamic, dynamic>) {
+                                    if (topicCourses.contains(key)) {
+                                      courses.add(Course(
+                                          name: key,
+                                          count: (value['students'] as List)
+                                              .length,
+                                          max: value['max'],
+                                          cabinet: value['cabinet'],
+                                          teacher: value['teacher']));
+                                    }
+                                  } else {
+                                    print(
+                                        "Неправильный тип данных для курса с ключом '$key': ${value.runtimeType}");
+                                  }
+                                });
+                              } else {
+                                print(
+                                    "Неправильный тип данных: ${snapshotValue.runtimeType}");
+                                return Center(
+                                  child: Text("Нет данных"),
+                                );
+                              }
+                              return Wrap(
+                                spacing: 10,
+                                runSpacing: 10,
+                                children: courses
+                                    .map(
+                                      (e) => TopicCourseTile(
+                                        heading: e.name,
+                                        count: e.count,
+                                        max: e.max,
+                                        cabinet: e.cabinet,
+                                        teacher: e.teacher,
+                                      ),
+                                    )
+                                    .toList(),
+                              );
+                            });
+                      }),
                 ),
               ),
             ],
@@ -191,9 +189,13 @@ class TopicCourseTile extends StatelessWidget {
       {super.key,
       required this.heading,
       required this.count,
-      required this.max});
-  String heading;
-  int max, count;
+      required this.max,
+      required this.cabinet,
+      required this.teacher});
+  final String heading;
+  final int max, count;
+  final String teacher;
+  final String cabinet;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -242,14 +244,35 @@ class TopicCourseTile extends StatelessWidget {
           ],
         ),
       ),
-      onTap: (){
+      onTap: () {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return CourseInfoDialog(topicNAME: heading, count: count,max: max,);
+            return CourseInfoDialog(
+              topicNAME: heading,
+              count: count,
+              max: max,
+              cabinet: cabinet,
+              teacher: teacher,
+            );
           },
         );
       },
     );
   }
+}
+
+class Course {
+  final String name;
+  final int count;
+  final int max;
+  final String teacher;
+  final String cabinet;
+  Course({
+    required this.name,
+    required this.count,
+    required this.max,
+    required this.teacher,
+    required this.cabinet,
+  });
 }

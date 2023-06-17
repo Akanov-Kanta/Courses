@@ -51,9 +51,15 @@ class _UsersListPageState extends State<UsersListPage> {
           height: 10,
         ),
         Expanded(
-          child:  StreamBuilder(
+          child: StreamBuilder(
             stream: FirebaseDatabase.instance.ref().child('users').onValue,
             builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Image.asset('images/PurpleBook.gif'),
+                );
+              }
+
               if (snapshot.hasError) {
                 return Center(
                   child: Text("Ошибка получения данных"),
@@ -74,7 +80,8 @@ class _UsersListPageState extends State<UsersListPage> {
                   if (value is Map<dynamic, dynamic>) {
                     users.add(User.fromMap(key, value));
                   } else {
-                    print("Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
+                    print(
+                        "Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
                   }
                 });
               } else {
@@ -87,7 +94,15 @@ class _UsersListPageState extends State<UsersListPage> {
                 itemCount: users.length,
                 itemBuilder: (BuildContext context, int index) {
                   final user = users[index];
-                  if(user.fio.toLowerCase().contains(searchController.text.toLowerCase()) || user.email.toLowerCase().contains(searchController.text.toLowerCase()) || user.grade.toLowerCase().contains(searchController.text.toLowerCase())){
+                  if (user.fio
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase()) ||
+                      user.email
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase()) ||
+                      user.grade
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase())) {
                     return UserTile(
                       onDelete: () => _deleteUser(user),
                       name: user.fio,
@@ -152,14 +167,13 @@ class User {
   final String email;
   final String password;
 
-  User({
-    required this.id,
-    required this.fio,
-    required this.grade,
-    required this.role,
-    required this.email,
-    required this.password
-  });
+  User(
+      {required this.id,
+      required this.fio,
+      required this.grade,
+      required this.role,
+      required this.email,
+      required this.password});
 
   factory User.fromMap(String id, Map<dynamic, dynamic> data) {
     return User(
