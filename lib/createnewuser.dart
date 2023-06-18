@@ -190,6 +190,11 @@ class _CreateTeacherState extends State<CreateTeacher> {
         'email': email,
         'role': 'Teacher'
       });
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: "test@gmail.com", // Email админского аккаунта
+        password: "test123", // Пароль админского аккаунта
+      );
       AwesomeDialog(
           context: context,
           width: MediaQuery.of(context).size.width/2,
