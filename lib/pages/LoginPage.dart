@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../const/constants.dart';
 import '../utils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -177,12 +178,16 @@ class _LoginPageState extends State<LoginPage> {
                                       filled: true,
                                       fillColor:
                                           Color.fromRGBO(46, 46, 93, 0.04),
-                                      labelText: 'Ваша почта',
+                                      labelText: 'Школьная почта',
                                       labelStyle: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontWeight: FontWeight.normal,
                                       ),
-                                      hintText: 'Введите школьную почту',
+                                      floatingLabelStyle: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.normal,
+                                        color: DarkPurple,
+                                      ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                           color: Colors.grey,
@@ -262,12 +267,16 @@ class _LoginPageState extends State<LoginPage> {
                                       filled: true,
                                       fillColor:
                                           Color.fromRGBO(46, 46, 93, 0.04),
-                                      labelText: 'Ваш пароль',
+                                      labelText: 'Пароль',
                                       labelStyle: TextStyle(
                                         fontFamily: 'Poppins',
                                         fontWeight: FontWeight.normal,
                                       ),
-                                      hintText: 'Введите пароль',
+                                      floatingLabelStyle: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.normal,
+                                        color: DarkPurple,
+                                      ),
                                       enabledBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
                                           color: Colors.grey,

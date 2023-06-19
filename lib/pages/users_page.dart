@@ -17,107 +17,111 @@ class _UsersListPageState extends State<UsersListPage> {
   String searchResult = '';
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 10,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: TextField(
-            controller: searchController,
-            decoration: InputDecoration(
-              hintText: 'Поиск пользователя',
-              suffixIcon: Icon(Icons.search),
-              contentPadding: EdgeInsets.all(10),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  style: BorderStyle.none,
-                  width: 0,
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Поиск пользователя',
+                suffixIcon: Icon(Icons.search),
+                contentPadding: EdgeInsets.all(10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    style: BorderStyle.none,
+                    width: 0,
+                  ),
                 ),
+                filled: true,
+                fillColor: Colors.white,
               ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            onChanged: (String value) {
-              setState(() {
-                searchResult = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Expanded(
-          child: StreamBuilder(
-            stream: FirebaseDatabase.instance.ref().child('users').onValue,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: Image.asset('images/PurpleBook.gif'),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text("Ошибка получения данных"),
-                );
-              }
-
-              if (!snapshot.hasData || snapshot.data?.snapshot?.value == null) {
-                return Center(
-                  child: Text("Нет данных"),
-                );
-              }
-              final List<User> users = [];
-
-              final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
-              if (snapshotValue is Map<dynamic, dynamic>) {
-                final data = snapshotValue as Map<dynamic, dynamic>;
-                data.forEach((key, value) {
-                  if (value is Map<dynamic, dynamic>) {
-                    users.add(User.fromMap(key, value));
-                  } else {
-                    print(
-                        "Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
-                  }
+              onChanged: (String value) {
+                setState(() {
+                  searchResult = value;
                 });
-              } else {
-                print("Неправильный тип данных: ${snapshotValue.runtimeType}");
-                return Center(
-                  child: Text("Нет данных"),
-                );
-              }
-              return ListView.builder(
-                itemCount: users.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final user = users[index];
-                  if (user.fio
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase()) ||
-                      user.email
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase()) ||
-                      user.grade
-                          .toLowerCase()
-                          .contains(searchController.text.toLowerCase())) {
-                    return UserTile(
-                      onDelete: () => _deleteUser(user),
-                      name: user.fio,
-                      email: user.email,
-                      role: user.role,
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              );
-            },
+              },
+            ),
           ),
-        ),
-      ],
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: StreamBuilder(
+              stream: FirebaseDatabase.instance.ref().child('users').onValue,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: Image.asset('images/PurpleBook.gif'),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Ошибка получения данных"),
+                  );
+                }
+
+                if (!snapshot.hasData ||
+                    snapshot.data?.snapshot?.value == null) {
+                  return Center(
+                    child: Text("Нет данных"),
+                  );
+                }
+                final List<User> users = [];
+
+                final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
+                if (snapshotValue is Map<dynamic, dynamic>) {
+                  final data = snapshotValue as Map<dynamic, dynamic>;
+                  data.forEach((key, value) {
+                    if (value is Map<dynamic, dynamic>) {
+                      users.add(User.fromMap(key, value));
+                    } else {
+                      print(
+                          "Неправильный тип данных для пользователя с ключом '$key': ${value.runtimeType}");
+                    }
+                  });
+                } else {
+                  print(
+                      "Неправильный тип данных: ${snapshotValue.runtimeType}");
+                  return Center(
+                    child: Text("Нет данных"),
+                  );
+                }
+                return ListView.builder(
+                  physics: BouncingScrollPhysics(),
+                  padding: EdgeInsets.all(10.0),
+                  itemCount: users.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final user = users[index];
+                    if (user.fio
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()) ||
+                        user.email
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase()) ||
+                        user.grade
+                            .toLowerCase()
+                            .contains(searchController.text.toLowerCase())) {
+                      return UserTile(
+                        onDelete: () => _deleteUser(user),
+                        name: user.fio,
+                        email: user.email,
+                        role: user.role,
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 

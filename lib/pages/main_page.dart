@@ -7,9 +7,9 @@ import 'package:courses/pages/courses/teacherCourses.dart';
 import 'package:courses/pages/courses/topic_courses.dart';
 import 'package:courses/pages/schedule.dart';
 import 'package:courses/pages/users_page.dart';
+import 'package:courses/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:courses/side_bar.dart';
-
 
 import '../bottom_bar.dart';
 import '../main.dart';
@@ -61,7 +61,7 @@ class _MainPageState extends State<MainPage> {
       key: _scaffoldKey,
       backgroundColor: Colors.grey[200],
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
+      appBar: !isDesktop(context) ? AppBar(
         elevation: 0,
         leading: IconButton(
           onPressed: () {
@@ -78,15 +78,17 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
         backgroundColor: Colors.white,
-      ),
-      drawer: Sidebar(),
+      ) : null,
+      drawer: !isDesktop(context) ? Drawer(child: Sidebar(changePage: changeCurrentPage,)) : null,
       floatingActionButton: userRole == Roles.admin
           ? (currentPage.runtimeType == Topics
               ? FloatingActionButton(
                   onPressed: () {
-                    showDialog(context: context, builder: (context){
-                      return CreateNewChapter();
-                    });
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CreateNewChapter();
+                        });
                   },
                   child: Icon(Icons.create_new_folder_rounded),
                   backgroundColor: DarkPurple,
@@ -94,29 +96,42 @@ class _MainPageState extends State<MainPage> {
               : currentPage.runtimeType == TopicCourses
                   ? FloatingActionButton(
                       onPressed: () {
-                        showDialog(context: context, builder: (context){
-                          return CreateNewCourse(topicName: (currentPage as TopicCourses).topicName,);
-                        });
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return CreateNewCourse(
+                                topicName:
+                                    (currentPage as TopicCourses).topicName,
+                              );
+                            });
                       },
                       child: Icon(Icons.my_library_add_rounded),
                       backgroundColor: DarkPurple,
                     )
                   : currentPage.runtimeType == UsersListPage
-                  ? FloatingActionButton(
-                      onPressed: () {
-                        showDialog(context: context, builder: (context){
-                          return CreateNewUser();
-                        });
-
-                      },
-                      child: Icon(Icons.group_add_rounded),
-                      backgroundColor: DarkPurple,
-                    ) : null)
+                      ? FloatingActionButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return CreateNewUser();
+                                });
+                          },
+                          child: Icon(Icons.group_add_rounded),
+                          backgroundColor: DarkPurple,
+                        )
+                      : null)
           : null,
-      body: currentPage,
-      bottomNavigationBar: BottomBar(
-        changePage: changeCurrentPage,
+      body: Row(
+        children: [
+          if (isDesktop(context))
+            SizedBox(height: double.infinity, width: 250, child: Sidebar(changePage: changeCurrentPage,)),
+          Expanded(child: currentPage),
+        ],
       ),
+      bottomNavigationBar: !isDesktop(context) ? BottomBar(
+        changePage: changeCurrentPage,
+      ) : null,
     );
   }
 }

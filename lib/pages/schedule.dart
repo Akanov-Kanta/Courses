@@ -45,6 +45,7 @@ class _ScheduleState extends State<Schedule> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: EdgeInsets.only(right: 13),
@@ -54,24 +55,28 @@ class _ScheduleState extends State<Schedule> {
                     onPressed: _goBack,
                   ),
                 ),
-                Expanded(
-                  child: SizedBox(
-                    height: 70,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10)),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      alignment: Alignment.center,
-                      child: Text(
-                        weekdays[currentDate.weekday - 1],
-                        style: TextStyle(
-                            color: Color(0xFF4838D1),
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: SizedBox(
+                      height: 80,
+                      width: 250,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        alignment: Alignment.center,
+                        child: Text(
+                          weekdays[currentDate.weekday - 1],
+                          style: TextStyle(
+                              color: Color(0xFF4838D1),
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),

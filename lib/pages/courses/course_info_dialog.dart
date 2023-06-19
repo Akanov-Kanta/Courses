@@ -111,8 +111,7 @@ class CourseInfoDialog extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Spacer(), // Добавляем Spacer для занимания свободного пространства
+                                      ),// Добавляем Spacer для занимания свободного пространства
                                       userRole == Roles.admin ?IconButton(
                                         icon: Icon(Icons.delete),
                                         onPressed: (){
