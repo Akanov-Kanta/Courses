@@ -82,3 +82,5 @@ TextStyle SafeGoogleFont(
 }
 
 bool Authcheck = false;
+
+bool isDesktop(BuildContext context) => MediaQuery.of(context).size.width > MediaQuery.of(context).size.height;
