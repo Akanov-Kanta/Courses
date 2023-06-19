@@ -79,6 +79,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                           onPressed: (){
 
                             deleteDocument(widget.topicName);
+                            widget.changePage(1);
                           },
                         ):
                         Container(),

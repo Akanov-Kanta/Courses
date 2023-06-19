@@ -118,6 +118,7 @@ class CourseInfoDialog extends StatelessWidget {
                                         onPressed: (){
 
                                           deleteDocument(topicName,topicNAME);
+                                          Navigator.of(context).pop();
                                         },
                                       ):
                                       Container(),
