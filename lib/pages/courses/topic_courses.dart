@@ -1,3 +1,4 @@
+import 'package:courses/main.dart';
 import 'package:courses/pages/courses/all_topics.dart';
 import 'package:courses/pages/courses/course_info_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -12,7 +13,38 @@ class TopicCourses extends StatefulWidget {
   State<TopicCourses> createState() => _TopicCoursesState();
 }
 
+
+
 class _TopicCoursesState extends State<TopicCourses> {
+
+
+
+  void deleteDocument(String topicName) async {
+    final databaseReference = FirebaseDatabase.instance.reference();
+    DatabaseEvent TopiccourseEvent = await databaseReference.child('topics').child(topicName).child("courses").once();
+    List<dynamic> Topiccourses = TopiccourseEvent.snapshot.value as List<dynamic>;
+
+    await databaseReference.child('topics').child(topicName).remove();
+
+    DatabaseEvent courseEvent = await databaseReference.child('courses').once();
+    Map<dynamic, dynamic> courses = courseEvent.snapshot.value as Map<dynamic, dynamic>;
+    Topiccourses.forEach((key1){
+      courses.forEach((key, value) {
+        print("$key    $key1");
+        if (key1 == key) {
+          print("$key    $key1");
+          databaseReference.child('courses').child(key).remove();
+        }
+      });
+    });
+    widget.changePage(1);
+  }
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     List topicCourses = [];
@@ -36,8 +68,20 @@ class _TopicCoursesState extends State<TopicCourses> {
                         Text(
                           widget.topicName,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        )
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Spacer(), // Добавляем Spacer для занимания свободного пространства
+                        userRole == Roles.admin
+                        ?IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: (){
+
+                            deleteDocument(widget.topicName);
+                          },
+                        ):
+                        Container(),
                       ],
                     ),
                   ),
@@ -158,6 +202,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                                 children: courses
                                     .map(
                                       (e) => TopicCourseTile(
+                                        topicName: widget.topicName,
                                         heading: e.name,
                                         count: e.count,
                                         max: e.max,
@@ -179,6 +224,7 @@ class _TopicCoursesState extends State<TopicCourses> {
   }
 }
 
+
 class TopicCourseTile extends StatelessWidget {
   TopicCourseTile(
       {super.key,
@@ -186,7 +232,9 @@ class TopicCourseTile extends StatelessWidget {
       required this.count,
       required this.max,
       required this.cabinet,
-      required this.teacher});
+      required this.teacher,
+      required this.topicName});
+  final String topicName;
   final String heading;
   final int max, count;
   final String teacher;
@@ -244,6 +292,7 @@ class TopicCourseTile extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return CourseInfoDialog(
+              topicName: topicName,
               topicNAME: heading,
               count: count,
               max: max,

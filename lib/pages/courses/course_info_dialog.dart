@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
@@ -11,11 +12,24 @@ class CourseInfoDialog extends StatelessWidget {
       required this.count,
       required this.max,
       required this.cabinet,
-      required this.teacher});
+      required this.teacher,
+      required this.topicName});
   final String topicNAME;
   final String teacher;
   final String cabinet;
   final int max, count;
+  final String topicName;
+
+  void deleteDocument(String topicName, String courseName) async {
+    print("hello");
+    final databaseReference = FirebaseDatabase.instance.ref();
+    print(topicName);
+    print(courseName);
+    await databaseReference.child('courses').child(courseName).remove();
+    await databaseReference.child('topics').child(topicName).child('courses').child(courseName).remove();
+
+
+  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -98,6 +112,15 @@ class CourseInfoDialog extends StatelessWidget {
                                           ),
                                         ),
                                       ),
+                                      Spacer(), // Добавляем Spacer для занимания свободного пространства
+                                      userRole == Roles.admin ?IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: (){
+
+                                          deleteDocument(topicName,topicNAME);
+                                        },
+                                      ):
+                                      Container(),
                                     ],
                                   ),
                                 ),
