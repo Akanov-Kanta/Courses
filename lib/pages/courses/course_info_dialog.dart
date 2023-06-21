@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -19,6 +20,16 @@ class CourseInfoDialog extends StatelessWidget {
   final String cabinet;
   final int max, count;
   final String topicName;
+  void signUpForCourses() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      final myUid = currentUser.uid;
+      String topicName = topicNAME;
+
+      addToCourses(myUid, topicName);
+      addToUser(myUid, topicName);
+    }
+  }
 
   void deleteDocument(String topicName, String courseName) async {
     print("hello");
@@ -29,6 +40,35 @@ class CourseInfoDialog extends StatelessWidget {
     await databaseReference.child('topics').child(topicName).child('courses').child(courseName).remove();
 
 
+  }
+  void addToCourses(String userId, String topicName) {
+    final databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("courses")
+        .child(topicName)
+        .child("users")
+        .child(userId)
+        .set(true)
+        .then((value) {
+      print("User added to courses successfully!");
+    }).catchError((error) {
+      print("Failed to add user to courses: $error");
+    });
+  }
+
+  void addToUser(String userId, String topicName) {
+    final databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("users")
+        .child(userId)
+        .child("courses")
+        .child(topicName)
+        .set(true)
+        .then((value) {
+      print("Topic added to user successfully!");
+    }).catchError((error) {
+      print("Failed to add topic to user: $error");
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -244,13 +284,19 @@ class CourseInfoDialog extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    'Записаться',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w100,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white,
-                                      fontSize: 16,
+                                  TextButton(
+                                    onPressed: (){
+                                      signUpForCourses();
+
+                                    },
+                                    child: Text(
+                                      'Записаться',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w100,
+                                        fontFamily: 'Poppins',
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ],

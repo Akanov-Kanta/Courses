@@ -167,11 +167,10 @@ class _TopicCoursesState extends State<TopicCourses> {
                             data.forEach((key, value) async {
                               if (value is Map<dynamic, dynamic>) {
                                 if (topicCourses!.contains(key)) {
+                                  int studentCount = value['users'] != null ? value['users'].length : 0;
                                   courses.add(Course(
                                       name: key,
-                                      count: value['students'] == null
-                                          ? 0
-                                          : (value['students'] as List).length,
+                                      count: studentCount,
                                       max: value['max'],
                                       cabinet: value['cabinet'],
                                       teacher: value['teacher']));
