@@ -248,6 +248,7 @@ class CourseInfoDialog extends StatelessWidget {
                         ),
                         SizedBox(
                           height: 100,
+                          width: double.infinity,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15),
                             child: ElevatedButton(
@@ -279,25 +280,14 @@ class CourseInfoDialog extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      signUpForCourses();
-                                    },
-                                    child: Text(
-                                      'Записаться',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w100,
-                                        fontFamily: 'Poppins',
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              child: Text(
+                                'Записаться',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w100,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
