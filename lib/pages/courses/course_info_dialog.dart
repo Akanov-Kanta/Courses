@@ -37,10 +37,14 @@ class CourseInfoDialog extends StatelessWidget {
     print(topicName);
     print(courseName);
     await databaseReference.child('courses').child(courseName).remove();
-    await databaseReference.child('topics').child(topicName).child('courses').child(courseName).remove();
-
-
+    await databaseReference
+        .child('topics')
+        .child(topicName)
+        .child('courses')
+        .child(courseName)
+        .remove();
   }
+
   void addToCourses(String userId, String topicName) {
     final databaseReference = FirebaseDatabase.instance.ref();
     databaseReference
@@ -70,9 +74,11 @@ class CourseInfoDialog extends StatelessWidget {
       print("Failed to add topic to user: $error");
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.grey.shade50,
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -151,16 +157,17 @@ class CourseInfoDialog extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                      ),// Добавляем Spacer для занимания свободного пространства
-                                      userRole == Roles.admin ?IconButton(
-                                        icon: Icon(Icons.delete),
-                                        onPressed: (){
-
-                                          deleteDocument(topicName,topicNAME);
-                                          Navigator.of(context).pop();
-                                        },
-                                      ):
-                                      Container(),
+                                      ), // Добавляем Spacer для занимания свободного пространства
+                                      userRole == Roles.admin
+                                          ? IconButton(
+                                              icon: Icon(Icons.delete),
+                                              onPressed: () {
+                                                deleteDocument(
+                                                    topicName, topicNAME);
+                                                Navigator.of(context).pop();
+                                              },
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 ),
@@ -202,11 +209,8 @@ class CourseInfoDialog extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 180,
-                          decoration: BoxDecoration(
-                            color: Colors.white54,
-                          ),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             children: [
@@ -242,18 +246,12 @@ class CourseInfoDialog extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white54,
-                          ),
                           child: Padding(
-                            padding:
-                                EdgeInsetsDirectional.fromSTEB(50, 0, 50, 50),
+                            padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15),
                             child: ElevatedButton(
-                              onPressed: userRole == Roles.student &&
-                                      count < max
+                              onPressed: userRole == Roles.student && count < max
                                   ? () {
                                       AwesomeDialog(
                                         context: context,
@@ -268,11 +266,12 @@ class CourseInfoDialog extends StatelessWidget {
                                           Navigator.of(context).pop();
                                         },
                                       ).show();
+                                      signUpForCourses();
                                     }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(horizontal: 24),
-                                primary: count == max
+                                backgroundColor: count == max
                                     ? Colors.grey
                                     : DarkPurple, // Replace with your desired button color
                                 elevation: 3,
@@ -285,9 +284,8 @@ class CourseInfoDialog extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   TextButton(
-                                    onPressed: (){
+                                    onPressed: () {
                                       signUpForCourses();
-
                                     },
                                     child: Text(
                                       'Записаться',
