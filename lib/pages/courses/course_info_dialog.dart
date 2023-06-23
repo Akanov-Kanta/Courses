@@ -9,13 +9,13 @@ import '../../main.dart';
 class CourseInfoDialog extends StatelessWidget {
   const CourseInfoDialog(
       {super.key,
-      required this.topicNAME,
+      required this.courseName,
       required this.count,
       required this.max,
       required this.cabinet,
       required this.teacher,
       required this.topicName});
-  final String topicNAME;
+  final String courseName;
   final String teacher;
   final String cabinet;
   final int max, count;
@@ -24,10 +24,9 @@ class CourseInfoDialog extends StatelessWidget {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final myUid = currentUser.uid;
-      String topicName = topicNAME;
 
-      addToCourses(myUid, topicName);
-      addToUser(myUid, topicName);
+      addToCourses(myUid, courseName);
+      addToUser(myUid, courseName);
     }
   }
 
@@ -51,11 +50,11 @@ class CourseInfoDialog extends StatelessWidget {
         .remove();
   }
 
-  void addToCourses(String userId, String topicName) {
+  void addToCourses(String userId, String courseName) {
     final databaseReference = FirebaseDatabase.instance.ref();
     databaseReference
         .child("courses")
-        .child(topicName)
+        .child(courseName)
         .child("students")
         .child(userId)
         .set(true)
@@ -66,13 +65,13 @@ class CourseInfoDialog extends StatelessWidget {
     });
   }
 
-  void addToUser(String userId, String topicName) {
+  void addToUser(String userId, String courseName) {
     final databaseReference = FirebaseDatabase.instance.ref();
     databaseReference
         .child("users")
         .child(userId)
         .child("courses")
-        .child(topicName)
+        .child(courseName)
         .set(true)
         .then((value) {
       print("Topic added to user successfully!");
@@ -153,7 +152,7 @@ class CourseInfoDialog extends StatelessWidget {
                                           child: SizedBox(
                                             width: double.infinity,
                                             child: Text(
-                                              topicNAME,
+                                              courseName,
                                               softWrap: true,
                                               style: TextStyle(
                                                 fontFamily: 'Poppins',
@@ -169,7 +168,7 @@ class CourseInfoDialog extends StatelessWidget {
                                               icon: Icon(Icons.delete),
                                               onPressed: () {
                                                 deleteCourse(
-                                                    topicName, topicNAME);
+                                                    topicName, courseName);
                                                 Navigator.of(context).pop();
                                               },
                                             )
@@ -252,52 +251,130 @@ class CourseInfoDialog extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: 100,
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15),
-                            child: ElevatedButton(
-                              onPressed: userRole == Roles.student && count < max
-                                  ? () {
-                                      AwesomeDialog(
-                                        context: context,
-                                        dialogType: DialogType.success,
-                                        animType: AnimType.bottomSlide,
-                                        showCloseIcon: false,
-                                        title: 'Успешно!',
-                                        desc: 'Вы успешно записались на курс!!',
-                                        width: 500,
-                                        btnOkText: 'Хорошо',
-                                        btnOkOnPress: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ).show();
-                                      signUpForCourses();
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(horizontal: 24),
-                                backgroundColor: count == max
-                                    ? Colors.grey
-                                    : DarkPurple, // Replace with your desired button color
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: Text(
-                                'Записаться',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w100,
-                                  fontFamily: 'Poppins',
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        StreamBuilder(
+                            stream: FirebaseDatabase.instance
+                                .ref()
+                                .child('users')
+                                .child(FirebaseAuth.instance.currentUser!.uid)
+                                .child('courses')
+                                .onValue,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: Center(
+                                    child: Image.asset('images/PurpleBook.gif'),
+                                  ),
+                                );
+                              }
+                              if (snapshot.data?.snapshot.value == null ||
+                                  !(snapshot.data!.snapshot.value as Map)
+                                      .values
+                                      .contains(courseName)) {
+                                return SizedBox(
+                                  height: 100,
+                                  width: double.infinity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 50.0, vertical: 15),
+                                    child: ElevatedButton(
+                                      onPressed: userRole == Roles.student &&
+                                              count < max
+                                          ? () {
+                                              AwesomeDialog(
+                                                context: context,
+                                                dialogType: DialogType.success,
+                                                animType: AnimType.bottomSlide,
+                                                showCloseIcon: false,
+                                                title: 'Успешно!',
+                                                desc:
+                                                    'Вы успешно записались на курс!!',
+                                                width: 500,
+                                                btnOkText: 'Хорошо',
+                                                btnOkOnPress: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ).show();
+                                              signUpForCourses();
+                                            }
+                                          : null,
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 24),
+                                        backgroundColor: count == max
+                                            ? Colors.grey
+                                            : DarkPurple, // Replace with your desired button color
+                                        elevation: 3,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Записаться',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w100,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                              else{
+                                return SizedBox(
+                                  height: 100,
+                                  width: double.infinity,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 50.0, vertical: 15),
+                                    child: ElevatedButton(
+                                      onPressed: userRole == Roles.student 
+                                          ? () {
+                                              AwesomeDialog(
+                                                context: context,
+                                                dialogType: DialogType.success,
+                                                animType: AnimType.bottomSlide,
+                                                showCloseIcon: false,
+                                                title: 'Успешно!',
+                                                desc:
+                                                    'Вы успешно отписались от курса!!',
+                                                width: 500,
+                                                btnOkText: 'Хорошо',
+                                                btnOkOnPress: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ).show();
+                                            }
+                                          : null,
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 24),
+                                        backgroundColor: RedNotTrans, // Replace with your desired button color
+                                        elevation: 3,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Отписаться',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w100,
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }),
                       ],
                     ),
                   ),
