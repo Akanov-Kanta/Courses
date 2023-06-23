@@ -125,6 +125,7 @@ class TopicTile extends StatelessWidget {
           setPage(TopicCourses(
             topicName: heading,
             changePage: changePage,
+            razdel: description ,
           ));
         },
         child: SizedBox(
@@ -151,7 +152,7 @@ class TopicTile extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                    description,
+                      description=="circle"?"Кружок":description=="course"?"Курс 1/2":"Секция",
                     style: TextStyle(color: Color(0xFF4838D1), fontSize: 15),
                   ),
                 ],

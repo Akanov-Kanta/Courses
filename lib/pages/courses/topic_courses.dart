@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:courses/pages/courses/course_info_dialog.dart';
 
 class TopicCourses extends StatefulWidget {
-  TopicCourses({super.key, required this.topicName, required this.changePage});
+  TopicCourses({super.key, required this.topicName, required this.changePage, required this.razdel});
   final String topicName;
   void Function(int) changePage;
+  final String razdel;
 
   @override
   State<TopicCourses> createState() => _TopicCoursesState();
@@ -25,7 +26,7 @@ class _TopicCoursesState extends State<TopicCourses> {
         .once();
     Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
     Topiccourses.forEach((key1, key) {
-      databaseReference.child('users').child(key1).child("courses").child(courseName).remove();
+      databaseReference.child('users').child(key1).child("courses").child(widget.razdel).remove();
     });
     await databaseReference.child('courses').child(courseName).remove();
   }
@@ -218,6 +219,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                                         max: e.max,
                                         cabinet: e.cabinet,
                                         teacher: e.teacher,
+                                        razdel: widget.razdel,
                                       ),
                                     )
                                     .toList(),
@@ -242,12 +244,14 @@ class TopicCourseTile extends StatelessWidget {
       required this.max,
       required this.cabinet,
       required this.teacher,
-      required this.topicName});
+      required this.topicName,
+      required this.razdel});
   final String topicName;
   final String heading;
   final int max, count;
   final String teacher;
   final String cabinet;
+  final String razdel;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -303,6 +307,7 @@ class TopicCourseTile extends StatelessWidget {
               max: max,
               cabinet: cabinet,
               teacher: teacher,
+              razdel: razdel,
             );
           },
         );

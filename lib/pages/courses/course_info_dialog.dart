@@ -6,7 +6,7 @@ import 'package:courses/pages/courses/topic_courses.dart';
 import '../../const/constants.dart';
 import '../../main.dart';
 
-class CourseInfoDialog extends StatelessWidget {
+class CourseInfoDialog extends StatefulWidget {
   const CourseInfoDialog(
       {super.key,
       required this.courseName,
@@ -14,19 +14,69 @@ class CourseInfoDialog extends StatelessWidget {
       required this.max,
       required this.cabinet,
       required this.teacher,
-      required this.topicName});
+      required this.topicName, required this.razdel});
   final String courseName;
   final String teacher;
   final String cabinet;
   final int max, count;
   final String topicName;
-  void signUpForCourses() async {
+  final String razdel;
+
+  @override
+  State<CourseInfoDialog> createState() => _CourseInfoDialogState();
+}
+
+class _CourseInfoDialogState extends State<CourseInfoDialog> {
+  Future<bool> hasDataInDocument() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      final myUid = currentUser.uid;
+      final databaseReference = FirebaseDatabase.instance.reference();
+      DatabaseEvent dataSnapshot =
+      await databaseReference.child("users").child(myUid).child("courses").once();
+
+      if (dataSnapshot.snapshot.value != null) {
+        Map<String, dynamic> razdels = dataSnapshot.snapshot.value as Map<String, dynamic>;
+        for (String key in razdels.keys) {
+          print(key);
+          if (key == widget.razdel) {
+            print(key);
+            return false;
+          }
+        }
+        return true;
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> myMethod() async {
+    bool hasData = await hasDataInDocument();
+  }
+  void unfollow() async{
+    print("hello");
+    final databaseReference = FirebaseDatabase.instance.ref();
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final myUid = currentUser.uid;
 
-      addToCourses(myUid, courseName);
-      addToUser(myUid, courseName);
+      await databaseReference.child("users").child(myUid).child("courses").child(widget.razdel).remove();
+      print(widget.courseName);
+      await databaseReference.child("courses").child(widget.courseName).child("students").child(myUid).remove();
+
+    }
+  }
+
+  void signUpForCourses() async {
+    print("hello");
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      final myUid = currentUser.uid;
+
+      addToCourses(myUid, widget.courseName);
+      addToUser(myUid, myUid);
     }
   }
 
@@ -39,7 +89,7 @@ class CourseInfoDialog extends StatelessWidget {
         .once();
     Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
     Topiccourses.forEach((key1, key) {
-      databaseReference.child('users').child(key1).child("courses").child(courseName).remove();
+      databaseReference.child('users').child(key1).child("courses").child(widget.razdel).remove();
     });
     await databaseReference.child('courses').child(courseName).remove();
     await databaseReference
@@ -71,13 +121,18 @@ class CourseInfoDialog extends StatelessWidget {
         .child("users")
         .child(userId)
         .child("courses")
-        .child(courseName)
-        .set(true)
+        .child(widget.razdel)
+        .set(widget.courseName)
         .then((value) {
       print("Topic added to user successfully!");
     }).catchError((error) {
       print("Failed to add topic to user: $error");
     });
+  }
+
+  void initState() {
+    super.initState();
+    myMethod(); // Вызываем myMethod при инициализации виджета
   }
 
   @override
@@ -152,7 +207,7 @@ class CourseInfoDialog extends StatelessWidget {
                                           child: SizedBox(
                                             width: double.infinity,
                                             child: Text(
-                                              courseName,
+                                              widget.courseName,
                                               softWrap: true,
                                               style: TextStyle(
                                                 fontFamily: 'Poppins',
@@ -168,7 +223,7 @@ class CourseInfoDialog extends StatelessWidget {
                                               icon: Icon(Icons.delete),
                                               onPressed: () {
                                                 deleteCourse(
-                                                    topicName, courseName);
+                                                    widget.topicName, widget.courseName);
                                                 Navigator.of(context).pop();
                                               },
                                             )
@@ -202,11 +257,11 @@ class CourseInfoDialog extends StatelessWidget {
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  color: count < max
+                                                  color: widget.count < widget.max
                                                       ? TransGreen
                                                       : TransRed),
                                               child: Center(
-                                                  child: Text('$count/$max')))),
+                                                  child: Text('${widget.count}/${widget.max}')))),
                                     ),
                                   ],
                                 ),
@@ -225,7 +280,7 @@ class CourseInfoDialog extends StatelessWidget {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       50, 15, 70, 0),
                                   child: Text(
-                                    'Учитель: $teacher',
+                                    'Учитель: ${widget.teacher}',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 18,
@@ -240,7 +295,7 @@ class CourseInfoDialog extends StatelessWidget {
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       50, 0, 70, 20),
                                   child: Text(
-                                    'Кабинет проведения: $cabinet',
+                                    'Кабинет проведения: ${widget.cabinet}',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 18,
@@ -272,44 +327,56 @@ class CourseInfoDialog extends StatelessWidget {
                               if (snapshot.data?.snapshot.value == null ||
                                   !(snapshot.data!.snapshot.value as Map)
                                       .values
-                                      .contains(courseName)) {
+                                      .contains(widget.courseName)) {
                                 return SizedBox(
                                   height: 100,
                                   width: double.infinity,
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 50.0, vertical: 15),
+                                    padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15),
                                     child: ElevatedButton(
-                                      onPressed: userRole == Roles.student &&
-                                              count < max
-                                          ? () {
-                                              AwesomeDialog(
-                                                context: context,
-                                                dialogType: DialogType.success,
-                                                animType: AnimType.bottomSlide,
-                                                showCloseIcon: false,
-                                                title: 'Успешно!',
-                                                desc:
-                                                    'Вы успешно записались на курс!!',
-                                                width: 500,
-                                                btnOkText: 'Хорошо',
-                                                btnOkOnPress: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ).show();
-                                              signUpForCourses();
-                                            }
-                                          : null,
+                                      onPressed: () async{
+                                        bool hasData = await hasDataInDocument();
+                                        print(hasData);
+                                        if(userRole == Roles.student && widget.count < widget.max && hasData){
+                                          AwesomeDialog(
+                                            context: context,
+                                            dialogType: DialogType.success,
+                                            animType: AnimType.bottomSlide,
+                                            showCloseIcon: false,
+                                            title: 'Успешно!',
+                                            desc: 'Вы успешно записались на курс!!',
+                                            width: 500,
+                                            btnOkText: 'Хорошо',
+                                            btnOkOnPress: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ).show();
+                                          signUpForCourses();
+                                        }
+                                        else{
+                                          AwesomeDialog(
+                                            context: context,
+                                            dialogType: DialogType.error,
+                                            animType: AnimType.bottomSlide,
+                                            showCloseIcon: false,
+                                            title: widget.razdel=="circle"?"Кружок":widget.razdel=="course"?"Курс 1/2":"Секция",
+                                            desc: 'Вы уже записаны на один из курсов из этого раздела',
+                                            width: 500,
+                                            btnOkText: 'Хорошо',
+                                            btnOkOnPress: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ).show();
+                                        }
+                                      },
                                       style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 24),
-                                        backgroundColor: count == max
+                                        padding: EdgeInsets.symmetric(horizontal: 24),
+                                        backgroundColor: widget.count == widget.max
                                             ? Colors.grey
                                             : DarkPurple, // Replace with your desired button color
                                         elevation: 3,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                       ),
                                       child: Text(
@@ -333,7 +400,7 @@ class CourseInfoDialog extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 50.0, vertical: 15),
                                     child: ElevatedButton(
-                                      onPressed: userRole == Roles.student 
+                                      onPressed: userRole == Roles.student
                                           ? () {
                                               AwesomeDialog(
                                                 context: context,
@@ -349,6 +416,8 @@ class CourseInfoDialog extends StatelessWidget {
                                                   Navigator.of(context).pop();
                                                 },
                                               ).show();
+                                              unfollow();
+
                                             }
                                           : null,
                                       style: ElevatedButton.styleFrom(
