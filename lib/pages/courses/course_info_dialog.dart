@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-
+import 'package:courses/pages/courses/topic_courses.dart';
 import '../../const/constants.dart';
 import '../../main.dart';
 
@@ -31,11 +31,17 @@ class CourseInfoDialog extends StatelessWidget {
     }
   }
 
-  void deleteDocument(String topicName, String courseName) async {
-    print("hello");
+  void deleteCourse(String topicName, String courseName) async {
     final databaseReference = FirebaseDatabase.instance.ref();
-    print(topicName);
-    print(courseName);
+    DatabaseEvent courseEvent = await databaseReference
+        .child('courses')
+        .child(courseName)
+        .child("students")
+        .once();
+    Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
+    Topiccourses.forEach((key1, key) {
+      databaseReference.child('users').child(key1).child("courses").child(courseName).remove();
+    });
     await databaseReference.child('courses').child(courseName).remove();
     await databaseReference
         .child('topics')
@@ -50,7 +56,7 @@ class CourseInfoDialog extends StatelessWidget {
     databaseReference
         .child("courses")
         .child(topicName)
-        .child("users")
+        .child("students")
         .child(userId)
         .set(true)
         .then((value) {
@@ -156,13 +162,13 @@ class CourseInfoDialog extends StatelessWidget {
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        )
                                       ), // Добавляем Spacer для занимания свободного пространства
                                       userRole == Roles.admin
                                           ? IconButton(
                                               icon: Icon(Icons.delete),
                                               onPressed: () {
-                                                deleteDocument(
+                                                deleteCourse(
                                                     topicName, topicNAME);
                                                 Navigator.of(context).pop();
                                               },

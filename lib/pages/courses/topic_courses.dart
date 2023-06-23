@@ -3,6 +3,7 @@ import 'package:courses/pages/courses/all_topics.dart';
 import 'package:courses/pages/courses/course_info_dialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:courses/pages/courses/course_info_dialog.dart';
 
 class TopicCourses extends StatefulWidget {
   TopicCourses({super.key, required this.topicName, required this.changePage});
@@ -14,16 +15,28 @@ class TopicCourses extends StatefulWidget {
 }
 
 class _TopicCoursesState extends State<TopicCourses> {
-  void deleteDocument(String topicName) async {
+
+  void deleteCourseWithoutTopic(String topicName, String courseName) async {
+    final databaseReference = FirebaseDatabase.instance.ref();
+    DatabaseEvent courseEvent = await databaseReference
+        .child('courses')
+        .child(courseName)
+        .child("students")
+        .once();
+    Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
+    Topiccourses.forEach((key1, key) {
+      databaseReference.child('users').child(key1).child("courses").child(courseName).remove();
+    });
+    await databaseReference.child('courses').child(courseName).remove();
+  }
+  void deleteTopic(String topicName) async {
     final databaseReference = FirebaseDatabase.instance.reference();
     DatabaseEvent TopiccourseEvent = await databaseReference
         .child('topics')
         .child(topicName)
         .child("courses")
         .once();
-    List<dynamic> Topiccourses =
-        TopiccourseEvent.snapshot.value as List<dynamic>;
-
+    List<dynamic> Topiccourses = TopiccourseEvent.snapshot.value as List<dynamic>;
     await databaseReference.child('topics').child(topicName).remove();
 
     DatabaseEvent courseEvent = await databaseReference.child('courses').once();
@@ -31,10 +44,8 @@ class _TopicCoursesState extends State<TopicCourses> {
         courseEvent.snapshot.value as Map<dynamic, dynamic>;
     Topiccourses.forEach((key1) {
       courses.forEach((key, value) {
-        print("$key    $key1");
         if (key1 == key) {
-          print("$key    $key1");
-          databaseReference.child('courses').child(key).remove();
+          deleteCourseWithoutTopic(topicName, key);
         }
       });
     });
@@ -75,7 +86,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                           ? IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () {
-                                deleteDocument(widget.topicName);
+                                deleteTopic(widget.topicName);
                                 widget.changePage(1);
                               },
                             )
@@ -167,7 +178,7 @@ class _TopicCoursesState extends State<TopicCourses> {
                             data.forEach((key, value) async {
                               if (value is Map<dynamic, dynamic>) {
                                 if (topicCourses!.contains(key)) {
-                                  int studentCount = value['users'] != null ? value['users'].length : 0;
+                                  int studentCount = value['students'] != null ? value['students'].length : 0;
                                   courses.add(Course(
                                       name: key,
                                       count: studentCount,
