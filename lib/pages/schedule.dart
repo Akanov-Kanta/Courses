@@ -1,4 +1,6 @@
 import 'package:courses/pages/courses/topic_courses.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class Schedule extends StatefulWidget {
@@ -37,6 +39,7 @@ class _ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
+    String currentWeeekDay = weekdays[currentDate.weekday - 1];
     return Padding(
       padding: const EdgeInsets.only(top: 0, left: 15, right: 15, bottom: 15),
       child: Column(
@@ -71,7 +74,7 @@ class _ScheduleState extends State<Schedule> {
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         alignment: Alignment.center,
                         child: Text(
-                          weekdays[currentDate.weekday - 1],
+                          currentWeeekDay,
                           style: TextStyle(
                               color: Color(0xFF4838D1),
                               fontSize: 25,
@@ -96,22 +99,64 @@ class _ScheduleState extends State<Schedule> {
             height: 10,
           ),
           Expanded(
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(10.0),
-              children: [
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                ScheduleTile(heading: 'ОП по Информатике', cabinet: 'Т 304', teacher: 'Ахмутина У.М.', time: '09:00-09:40',),
-                
-              ],
-            ),
+            child: StreamBuilder(
+                stream: FirebaseDatabase.instance
+                    .ref()
+                    .child('users')
+                    .child(FirebaseAuth.instance.currentUser!.uid)
+                    .child('courses')
+                    .onValue,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Image.asset('images/PurpleBook.gif'),
+                    );
+                  }
+                  List<String>? userCourses =
+                      (snapshot.data?.snapshot.value as Map?)
+                          ?.values
+                          .cast<String>()
+                          .toList();
+                  return StreamBuilder(
+                      stream: FirebaseDatabase.instance
+                          .ref()
+                          .child('courses')
+                          .onValue,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: Image.asset('images/PurpleBook.gif'),
+                          );
+                        }
+                        Map? data = snapshot.data?.snapshot.value as Map?;
+                        Map userCoursesData = {};
+                        userCourses?.forEach((element) {
+                          userCoursesData.addAll({element: data![element]});
+                        });
+                        List<ScheduleTile> weekdaySchedule = [];
+                        if (userCoursesData != null) {
+                          userCoursesData.forEach((key, value) {
+                            final val = value as Map;
+                            final schedule = val['schedule'] as Map;
+                            schedule.forEach((key2, value2) {
+                              if (key2 == currentWeeekDay) {
+                                weekdaySchedule.add(ScheduleTile(
+                                    heading: key,
+                                    teacher: val['teacher'],
+                                    cabinet: val['cabinet'],
+                                    time: value2));
+                              }
+                            });
+                          });
+                        }
+                        return weekdaySchedule.isEmpty ? Center(child: Text('Нет курсов'),) : ListView(
+                          physics: BouncingScrollPhysics(),
+                          padding: EdgeInsets.all(10.0),
+                          children: weekdaySchedule,
+                        );
+                      });
+                }),
           ),
         ],
       ),
@@ -120,12 +165,19 @@ class _ScheduleState extends State<Schedule> {
 }
 
 class ScheduleTile extends StatelessWidget {
-  ScheduleTile({super.key, required this.heading, required this.teacher, required this.cabinet, required this.time});
+  ScheduleTile(
+      {super.key,
+      required this.heading,
+      required this.teacher,
+      required this.cabinet,
+      required this.time});
   final String heading, teacher, cabinet, time;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5,),
+      padding: const EdgeInsets.symmetric(
+        vertical: 5,
+      ),
       child: SizedBox(
         width: double.infinity,
         child: Material(
@@ -149,7 +201,8 @@ class ScheduleTile extends StatelessWidget {
                         width: double.infinity,
                         child: Text(
                           heading,
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -166,7 +219,9 @@ class ScheduleTile extends StatelessWidget {
                         child: Text(
                           cabinet,
                           textAlign: TextAlign.end,
-                          style: TextStyle(fontSize: 20,),
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -183,7 +238,9 @@ class ScheduleTile extends StatelessWidget {
                         width: double.infinity,
                         child: Text(
                           teacher,
-                          style: TextStyle(fontSize: 15,),
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),
@@ -200,7 +257,9 @@ class ScheduleTile extends StatelessWidget {
                         child: Text(
                           time,
                           textAlign: TextAlign.end,
-                          style: TextStyle(fontSize: 15,),
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                     ),
