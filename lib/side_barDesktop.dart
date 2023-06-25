@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,6 +11,7 @@ class SidebarD extends StatefulWidget{
 }
 
 class _SidebarDState extends State<SidebarD>{
+  final currentUser = FirebaseAuth.instance.currentUser;
   @override
   int _selectedIndex = 0;
   void _onItemTapped(int index) {
@@ -127,34 +130,61 @@ class _SidebarDState extends State<SidebarD>{
                         ),
                       ),
                     ),
-                    ListTile(
-                      title: Text(
-                        'Курс 1:  Робототехника',
-                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
-                      ),
-                      onTap: (){
-                        print("Курс 1");
-                      },
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Курс 2:  Вокал',
-                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5, fontFamily: "poppins"),
-                      ),
-                      onTap: (){
-                        print("Курс 2");
-                      },
-                    ),
-                    ListTile(
-                      title: Text(
-                        'Секция:  Баскетбол',
-                        style: TextStyle(color: Color(0xFF2E2E5D), letterSpacing: .5,fontFamily: "poppins"),
+                    StreamBuilder(
+                        stream: FirebaseDatabase.instance.ref().child('users').child(currentUser!.uid).child("courses").onValue,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(
+                              child: Image.asset('images/PurpleBook.gif'),
+                            );
+                          }
 
-                      ),
-                      onTap: (){
-                        print("Секция");
-                      },
-                    )
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text("Ошибка получения данных"),
+                            );
+                          }
+
+                          if (!snapshot.hasData ||
+                              snapshot.data?.snapshot.value == null) {
+                            return Center(
+                              child: Text("Нет данных"),
+                            );
+                          }
+
+                          List<String> Courses = [];
+
+                          final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
+                          if (snapshotValue is Map<dynamic, dynamic>) {
+                            final data = snapshotValue as Map<dynamic, dynamic>;
+                            data.forEach((key, value) {
+                              if (value is Map<dynamic, dynamic>) {
+                                Courses.add(value[key]);
+                              } else {
+                                print(
+                                    "Неправильный тип данных для раздела с ключом '$key': ${value.runtimeType}");
+                              }
+                            });
+                          } else {
+                            print(
+                                "Неправильный тип данных: ${snapshotValue.runtimeType}");
+                            return Center(
+                              child: Text("Нет данных"),
+                            );
+                          }
+
+                          return ListView.builder(
+                            physics: BouncingScrollPhysics(),
+                            padding: EdgeInsets.all(10.0),
+                            itemCount: Courses.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final topic = Courses[index];
+                              return Text(
+                                topic
+                              );
+                            },
+                          );
+                        }),
                   ],
                 ),
               )
