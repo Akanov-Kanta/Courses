@@ -1,5 +1,6 @@
 import 'package:courses/pages/LoginPage.dart';
 import 'package:courses/pages/courses/createnewchapter.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,7 @@ class CreateNewCourse extends StatefulWidget {
 class _CreateNewCourseState extends State<CreateNewCourse> {
   late double screenWidth;
   late double screenHeight;
+  String? selectedTeacher;
   final TextEditingController _courseName = TextEditingController();
   final TextEditingController _courseTeacher = TextEditingController();
   final TextEditingController _courseCabinet = TextEditingController();
@@ -81,6 +83,23 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
 
   final _formKey = GlobalKey<FormState>();
   @override
+  Future<List<String>> fetchTeacherNamesFromFirebase() async {
+    List<String> teacherNames = [];
+
+    DatabaseReference usersRef = FirebaseDatabase.instance.ref().child('users');
+
+    DatabaseEvent dataSnapshot = await usersRef.orderByChild('role').equalTo('Teacher').once();
+    
+    Map<dynamic, dynamic>? data = dataSnapshot.snapshot.value as Map<dynamic, dynamic>?;;
+    if (data != null) {
+      data.forEach((key, value) {
+        var name = value['fio'];
+        teacherNames.add(name);
+      });
+    }
+
+    return teacherNames;
+  }
   Widget build(BuildContext context) {
     if (MediaQuery.of(context).size.width > 600) {
       screenWidth = 500;
@@ -144,9 +163,80 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                       CustomInputField(
                           texting: 'Введите название курса',
                           controller: _courseName),
-                      CustomInputField(
-                          texting: 'Введите ФИО учителя',
-                          controller: _courseTeacher),
+                      FutureBuilder<List<String>>(
+                        future: fetchTeacherNamesFromFirebase(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Ошибка при загрузке данных');
+                          } else {
+                            List<String> teacherNames = snapshot.data!;
+                            return Container(
+                              width: double.infinity,
+                              height: 120,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    "Введите имя учителя",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: 'Futura',
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
+                                    child: DropdownSearch<String>(
+                                      mode: Mode.MENU,
+                                      showSelectedItems: true,
+                                      items: teacherNames,
+                                      dropdownSearchDecoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Color.fromRGBO(46, 46, 93, 0.04),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.black,
+                                            width: 1,
+                                          ),
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.grey, // Set the desired grey color here
+                                            width: 1,
+                                          ),
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                        labelStyle: TextStyle(
+                                          fontFamily: 'Futura',
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(30),
+                                        ),
+                                      ),
+                                      onChanged: (String? value) {
+                                        selectedTeacher = value;
+                                      },
+                                      showSearchBox: true,
+                                      searchFieldProps: TextFieldProps(
+                                        cursorColor: Colors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
                       CustomInputField(
                           texting: 'Введите кабинет',
                           controller: _courseCabinet),
@@ -204,7 +294,7 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                                             'max':
                                                 int.parse(_courseAmount.text),
                                             'schedule': schedule,
-                                            'teacher': _courseTeacher.text,
+                                            'teacher': selectedTeacher,
                                           });
                                           var buf = await ref
                                               .child(

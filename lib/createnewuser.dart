@@ -163,6 +163,14 @@ class CreateTeacher extends StatefulWidget {
 }
 
 class _CreateTeacherState extends State<CreateTeacher> {
+  final List<String> _list = [
+    "Follow",
+    "lakshydeep-14",
+    "on",
+    "Github",
+    "Medium",
+    "LinkedIn"
+  ];
   TextEditingController _membershipController =TextEditingController();
   TextEditingController _nameController=TextEditingController();
   TextEditingController _emailTeacher=TextEditingController();
@@ -225,8 +233,8 @@ class _CreateTeacherState extends State<CreateTeacher> {
       print('Ошибка отправки данных в Firebase: $e');
     }
   }
-  
-  
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -245,7 +253,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         width: screenWidth,
-        height: 450,
+        height: 550,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -322,7 +330,7 @@ class _CreateTeacherState extends State<CreateTeacher> {
             )
           ],
         ),
-        
+
       ),
     );
   }
