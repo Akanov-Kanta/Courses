@@ -80,6 +80,39 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
     // TODO: implement dispose
     super.dispose();
   }
+  void signTeacherUpForCourses(userName, courseName) async {
+    print("hello");
+    final databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("users")
+        .orderByChild("fio")
+        .equalTo(userName)
+        .once()
+        .then((DatabaseEvent snapshot) {
+      if (snapshot.snapshot.value != null) {
+        // Iterate through the results
+        Map<dynamic, dynamic> data = snapshot.snapshot.value as  Map<dynamic, dynamic>;
+        data.forEach((key, value) {
+          // Update the child with the specified topicName
+          databaseReference
+              .child("users")
+              .child(key)
+              .child("courses")
+              .child(widget.topicName=="Кружок"?"circle":widget.topicName=="Олимпиадная подготовка"?"course":"section")
+              .set(courseName)
+              .then((value) {
+            print("Topic added to user successfully!");
+          }).catchError((error) {
+            print("Failed to add topic to user: $error");
+          });
+        });
+      } else {
+        print("User not found!");
+      }
+    }).catchError((error) {
+      print("Failed to retrieve user: $error");
+    });
+  }
 
   final _formKey = GlobalKey<FormState>();
   @override
@@ -313,6 +346,7 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
                                             num.toString(): _courseName.text,
                                           });
                                           Navigator.of(context).pop();
+                                          signTeacherUpForCourses(selectedTeacher, _courseName.text);
                                         },
                                       );
                                     });

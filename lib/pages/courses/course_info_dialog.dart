@@ -80,16 +80,47 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
     }
   }
 
-  void deleteCourse(String topicName, String courseName) async {
+  void deleteCourse(String topicName, String courseName, teacherName) async {
     final databaseReference = FirebaseDatabase.instance.ref();
     DatabaseEvent courseEvent = await databaseReference
         .child('courses')
         .child(courseName)
         .child("students")
         .once();
-    Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
-    Topiccourses.forEach((key1, key) {
-      databaseReference.child('users').child(key1).child("courses").child(widget.razdel).remove();
+    if (courseEvent.snapshot.value != null) {
+      Map<String, dynamic> topicCourses = courseEvent.snapshot.value as Map<String, dynamic>;
+      topicCourses.forEach((key1, key) {
+        databaseReference.child('users').child(key1).child("courses").child(widget.razdel).remove();
+      });
+    } else {
+      print("No data available at the specified path");
+    }
+    databaseReference
+        .child("users")
+        .orderByChild("fio")
+        .equalTo(teacherName)
+        .once()
+        .then((DatabaseEvent snapshot) {
+      if (snapshot.snapshot.value != null) {
+        print(topicName);
+        Map<dynamic, dynamic> data = snapshot.snapshot.value as  Map<dynamic, dynamic>;
+        data.forEach((key, value) {
+          databaseReference
+              .child("users")
+              .child(key)
+              .child("courses")
+              .child(widget.topicName=="Кружок"?"circle":widget.topicName=="Олимпиадная подготовка"?"course":"section")
+              .remove()
+              .then((value) {
+          }).catchError((error) {
+            print("Failed to add topic to user: $error");
+          });
+        });
+      } else {
+        print("User not found!");
+      }
+    }).catchError((error) {
+      print("Failed to retrieve user: $error");
     });
     await databaseReference.child('courses').child(courseName).remove();
     await databaseReference
@@ -223,7 +254,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                                               icon: Icon(Icons.delete),
                                               onPressed: () {
                                                 deleteCourse(
-                                                    widget.topicName, widget.courseName);
+                                                    widget.topicName, widget.courseName, widget.teacher);
                                                 Navigator.of(context).pop();
                                               },
                                             )
