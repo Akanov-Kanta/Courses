@@ -109,7 +109,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
               .child("users")
               .child(key)
               .child("courses")
-              .child(widget.topicName=="Кружок"?"circle":widget.topicName=="Олимпиадная подготовка"?"course":"section")
+              .child(courseName)
               .remove()
               .then((value) {
           }).catchError((error) {
@@ -125,10 +125,27 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
     await databaseReference.child('courses').child(courseName).remove();
     await databaseReference
         .child('topics')
-        .child(topicName)
+        .child(widget.topicName)
         .child('courses')
-        .child(courseName)
-        .remove();
+        .orderByValue()
+        .equalTo(widget.courseName)
+        .once()
+        .then((DatabaseEvent snapshot) {
+      if (snapshot.snapshot.value != null) {
+        List<dynamic> courses = snapshot.snapshot.value as List<dynamic>;
+        courses.asMap().forEach((index, value) {
+          if (value == widget.courseName) {
+            // Удаляем документ по индексу
+            databaseReference
+                .child('topics')
+                .child(widget.topicName)
+                .child('courses')
+                .child(index.toString())
+                .remove();
+          }
+        });
+      }
+    });
   }
 
   void addToCourses(String userId, String courseName) {
@@ -152,7 +169,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         .child("users")
         .child(userId)
         .child("courses")
-        .child(widget.razdel)
+        .child(widget.razdel=="1 курс/2 курс"?"курсы":widget.razdel)
         .set(widget.courseName)
         .then((value) {
       print("Topic added to user successfully!");

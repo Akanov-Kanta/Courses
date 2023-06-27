@@ -98,8 +98,8 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
               .child("users")
               .child(key)
               .child("courses")
-              .child(widget.topicName=="Кружок"?"circle":widget.topicName=="Олимпиадная подготовка"?"course":"section")
-              .set(courseName)
+              .child(courseName)
+              .set(true)
               .then((value) {
             print("Topic added to user successfully!");
           }).catchError((error) {

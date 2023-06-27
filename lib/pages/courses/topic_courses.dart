@@ -19,15 +19,58 @@ class _TopicCoursesState extends State<TopicCourses> {
 
   void deleteCourseWithoutTopic(String topicName, String courseName) async {
     final databaseReference = FirebaseDatabase.instance.ref();
+    DatabaseEvent teacher = await databaseReference
+        .child('courses')
+        .child(courseName)
+        .once();
+    if (teacher.snapshot.value != null) {
+      final Map<dynamic, dynamic>? snapshotValue =
+      teacher.snapshot.value as Map<dynamic, dynamic>?;
+
+      if (snapshotValue != null) {
+        final teacherName = snapshotValue["teacher"];
+        print(teacherName);
+        databaseReference
+            .child("users")
+            .orderByChild("fio")
+            .equalTo(teacherName)
+            .once()
+            .then((DatabaseEvent snapshot) {
+          if (snapshot.snapshot.value != null) {
+            print(topicName);
+            Map<dynamic, dynamic> data = snapshot.snapshot.value as  Map<dynamic, dynamic>;
+            data.forEach((key, value) {
+              databaseReference
+                  .child("users")
+                  .child(key)
+                  .child("courses")
+                  .child(courseName)
+                  .remove()
+                  .then((value) {
+              }).catchError((error) {
+                print("Failed to add topic to user: $error");
+              });
+            });
+          } else {
+            print("User not found!");
+          }
+        }).catchError((error) {
+          print("Failed to retrieve user: $error");
+        });
+      }
+    }
     DatabaseEvent courseEvent = await databaseReference
         .child('courses')
         .child(courseName)
         .child("students")
         .once();
-    Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
-    Topiccourses.forEach((key1, key) {
-      databaseReference.child('users').child(key1).child("courses").child(widget.razdel).remove();
-    });
+    if(courseEvent.snapshot.value!=null){
+      Map<String, dynamic> Topiccourses = courseEvent.snapshot.value as Map<String, dynamic>;
+      Topiccourses.forEach((key1, key) {
+        databaseReference.child('users').child(key1).child("courses").child(widget.razdel=="1 курс/2 курс"?"курсы":widget.razdel).remove();
+      });
+    }
+
     await databaseReference.child('courses').child(courseName).remove();
   }
   void deleteTopic(String topicName) async {
