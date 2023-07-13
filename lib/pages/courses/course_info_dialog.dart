@@ -354,7 +354,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                             ],
                           ),
                         ),
-                        StreamBuilder(
+                        if(userRole == Roles.student) StreamBuilder(
                             stream: FirebaseDatabase.instance
                                 .ref()
                                 .child('users')

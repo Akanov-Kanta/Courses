@@ -64,8 +64,8 @@ class _teacherCoursesListState extends State<teacherCoursesList> {
                         String heading = entry.key;
                         String value = entry.value.toString(); // Modify the value format according to your requirements
                         return TeacherCourse(
-                          heading: value,
-                          razdel: heading,
+                          heading: heading,
+                          razdel: value,
                         );
                       }).toList(),
                     );
