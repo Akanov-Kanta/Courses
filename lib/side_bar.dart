@@ -191,7 +191,7 @@ class _SidebarState extends State<Sidebar> {
                       return ListTile(
                           title: Row(
                             children: [
-                              Text(Course.razdel=="circle"?"Кружок: ":Course.razdel=="course"?"Курс 1/2: ":"Секция: "),
+                              Text(Course.razdel=="Кружки"?"Кружок: ":Course.razdel=="курсы"?"Курс 1/2: ":"Секция: "),
                               Text(Course.title)
                             ],
                           ),

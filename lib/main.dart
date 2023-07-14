@@ -1,11 +1,7 @@
 import 'package:courses/const/constants.dart';
-import 'package:courses/pages/LoginPage.dart';
-import 'package:courses/pages/main_page.dart';
 import 'package:flutter/material.dart';
-import 'package:courses/pages/schedule.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:courses/Auth.dart';
-import 'package:courses/pages/users_page.dart';
 
 enum Roles { student, teacher, admin }
 

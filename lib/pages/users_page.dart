@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import '../create_excel.dart';
 import '../utils.dart';
 
 class UsersListPage extends StatefulWidget {
@@ -23,27 +24,48 @@ class _UsersListPageState extends State<UsersListPage> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Поиск пользователя',
-                suffixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.all(10),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    style: BorderStyle.none,
-                    width: 0,
+            child: SizedBox(
+              width: double.infinity,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Поиск пользователя',
+                        suffixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            style: BorderStyle.none,
+                            width: 0,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      onChanged: (String value) {
+                        setState(() {
+                          searchResult = value;
+                        });
+                      },
+                    ),
                   ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
+                  SizedBox(
+                    width: 10,
+                  ),
+                  IconButton(
+                      onPressed: () async {
+                        var event = await FirebaseDatabase.instance
+                            .ref()
+                            .child('users')
+                            .once();
+                        makeExcelUsersDoc(event.snapshot.value as Map);
+                      },
+                      icon: Icon(Icons.file_download_rounded))
+                ],
               ),
-              onChanged: (String value) {
-                setState(() {
-                  searchResult = value;
-                });
-              },
             ),
           ),
           SizedBox(
