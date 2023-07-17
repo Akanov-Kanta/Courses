@@ -62,7 +62,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
     if (currentUser != null) {
       final myUid = currentUser.uid;
 
-      await databaseReference.child("users").child(myUid).child("courses").child(widget.razdel).remove();
+      await databaseReference.child("users").child(myUid).child("courses").child(widget.razdel=="1 курс/2 курс"?"курсы":widget.razdel).remove();
       print(widget.courseName);
       await databaseReference.child("courses").child(widget.courseName).child("students").child(myUid).remove();
 
