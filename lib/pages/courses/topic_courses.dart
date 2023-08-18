@@ -344,6 +344,7 @@ class TopicCourseTile extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return CourseInfoDialog(
+              students: [],
               topicName: topicName,
               courseName: heading,
               count: count,

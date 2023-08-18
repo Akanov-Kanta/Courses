@@ -34,9 +34,27 @@ class _SidebarState extends State<Sidebar> {
         Map<dynamic, dynamic> Findcourses =
         FindcourseEvent.snapshot.value as Map<dynamic, dynamic>;
 
+        Map<String, dynamic> studentsMap = value['students'] ?? {};
+        List<String> studentIds = studentsMap.entries
+            .where((entry) => entry.value == true)
+            .map((entry) => entry.key.toString())
+            .toList();
+
+        List<String> studentDetails = [];
+        for (var studentId in studentIds) {
+          DatabaseEvent studentSnapshot =
+          await databaseReference.child('users').child(studentId).once();
+          Map<dynamic, dynamic> studentData =
+          studentSnapshot.snapshot.value as Map<dynamic, dynamic>;
+
+          String studentName = studentData["fio"];
+          studentDetails.add(studentName);
+        }
+
         CourseMore courseMore = CourseMore(
+          students: [],
           heading: courseName,
-          count: value['students'] != null ? value['students'].length : 0,
+          count: studentDetails.length,
           max: Findcourses["max"],
           cabinet: Findcourses["cabinet"],
           teacher: Findcourses["teacher"],
@@ -52,6 +70,59 @@ class _SidebarState extends State<Sidebar> {
 
     throw Exception('Course not found'); // Throw an exception if the course is not found
   }
+  Future<CourseMore> FindCourseTeach(String courseName, String razdel) async {
+    final databaseReference = FirebaseDatabase.instance.ref();
+    DatabaseEvent courseEvent = await databaseReference.child('courses').once();
+    Map<dynamic, dynamic> courses =
+    courseEvent.snapshot.value as Map<dynamic, dynamic>;
+
+    for (var entry in courses.entries) {
+      var key = entry.key;
+      var value = entry.value;
+
+      if (courseName == key) {
+        DatabaseEvent FindcourseEvent =
+        await databaseReference.child('courses').child(key).once();
+        Map<dynamic, dynamic> Findcourses =
+        FindcourseEvent.snapshot.value as Map<dynamic, dynamic>;
+
+        Map<String, dynamic> studentsMap = value['students'] ?? {};
+        List<String> studentIds = studentsMap.entries
+            .where((entry) => entry.value == true)
+            .map((entry) => entry.key.toString())
+            .toList();
+
+        List<String> studentDetails = [];
+        for (var studentId in studentIds) {
+          DatabaseEvent studentSnapshot =
+          await databaseReference.child('users').child(studentId).once();
+          Map<dynamic, dynamic> studentData =
+          studentSnapshot.snapshot.value as Map<dynamic, dynamic>;
+
+          String studentName = studentData["fio"];
+          studentDetails.add(studentName);
+        }
+
+        CourseMore courseMore = CourseMore(
+          students: studentDetails,
+          heading: courseName,
+          count: studentDetails.length,
+          max: Findcourses["max"],
+          cabinet: Findcourses["cabinet"],
+          teacher: Findcourses["teacher"],
+          topicName: "",
+          razdel: razdel,
+        );
+
+        return courseMore;
+      }
+    }
+
+    widget.changePage(1);
+
+    throw Exception('Course not found'); // Throw an exception if the course is not found
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isD = isDesktop(context);
@@ -201,6 +272,86 @@ class _SidebarState extends State<Sidebar> {
                             context: context,
                             builder: (BuildContext context) {
                               return CourseInfoDialog(
+                                students: result.students,
+                                topicName: "",
+                                courseName: Course.title,
+                                count: result.count,
+                                max: result.max,
+                                cabinet: result.cabinet,
+                                teacher: result.teacher,
+                                razdel: result.razdel,
+                              );
+                            },
+                          );
+
+                        },
+                      );
+                    },
+                  );
+                }),
+          ):Container(),
+          userRole == Roles.teacher? SizedBox(
+            height: 165,
+            child: StreamBuilder(
+                stream: FirebaseDatabase.instance.ref().child('users').child(currentUser!.uid).child("courses").onValue,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Image.asset('images/PurpleBook.gif'),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("Ошибка получения данных"),
+                    );
+                  }
+
+                  if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+                    return Center(
+                      child: Text("Нет данных"),
+                    );
+                  }
+
+                  List<Course> Courses = [];
+
+                  final dynamic snapshotValue = snapshot.data!.snapshot!.value!;
+                  if (snapshotValue is Map<String,dynamic>) {
+                    final data = snapshotValue as Map<String, dynamic>;
+                    data.forEach((key,value) {
+                      if (key is String) {
+                        Courses.add(Course(title: key, razdel: key));
+                      } else {
+                        print("Неправильный тип данных для раздела с ключом '$key': ${key.runtimeType}");
+                      }
+                    });
+                  } else {
+                    print("Неправильный тип данных: ${snapshotValue.runtimeType}");
+                    return Center(
+                      child: Text("Нет данных"),
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    padding: EdgeInsets.all(10.0),
+                    itemCount: Courses.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final Course = Courses[index];
+                      return ListTile(
+                        title: Row(
+                          children: [
+                            Text(Course.razdel=="Кружки"?"Кружок: ":Course.razdel=="курсы"?"Курс 1/2: ":"Секция: "),
+                            Text(Course.title)
+                          ],
+                        ),
+                        onTap: ()async{
+                          CourseMore result = await FindCourseTeach(Course.title, Course.razdel);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CourseInfoDialog(
+                                students: result.students,
                                 topicName: "",
                                 courseName: Course.title,
                                 count: result.count,
@@ -257,10 +408,12 @@ class CourseMore{
   final String teacher;
   final String cabinet;
   final String razdel;
+  final List<String> students;
   CourseMore({required this.heading, required this.count,
   required this.max,
   required this.cabinet,
   required this.teacher,
   required this.topicName,
-  required this.razdel});
+  required this.razdel,
+  required this.students});
 }

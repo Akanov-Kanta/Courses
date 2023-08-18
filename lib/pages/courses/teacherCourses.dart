@@ -14,7 +14,7 @@ class teacherCoursesList extends StatefulWidget {
 
 class _teacherCoursesListState extends State<teacherCoursesList> {
   final currentUser = FirebaseAuth.instance.currentUser!.uid;
-  
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,8 +104,60 @@ class TeacherCourse extends StatelessWidget {
         FindcourseEvent.snapshot.value as Map<dynamic, dynamic>;
 
         CourseMore courseMore = CourseMore(
+          students: [],
           heading: courseName,
           count: value['students'] != null ? value['students'].length : 0,
+          max: Findcourses["max"],
+          cabinet: Findcourses["cabinet"],
+          teacher: Findcourses["teacher"],
+          topicName: "",
+          razdel: razdel,
+        );
+
+        return courseMore;
+      }
+    }
+
+    throw Exception('Course not found'); // Throw an exception if the course is not found
+  }
+  Future<CourseMore> FindCourseTeach(String courseName, String razdel) async {
+    final databaseReference = FirebaseDatabase.instance.ref();
+    DatabaseEvent courseEvent = await databaseReference.child('courses').once();
+    Map<dynamic, dynamic> courses =
+    courseEvent.snapshot.value as Map<dynamic, dynamic>;
+
+    for (var entry in courses.entries) {
+      var key = entry.key;
+      var value = entry.value;
+
+      if (courseName == key) {
+        DatabaseEvent FindcourseEvent =
+        await databaseReference.child('courses').child(key).once();
+        Map<dynamic, dynamic> Findcourses =
+        FindcourseEvent.snapshot.value as Map<dynamic, dynamic>;
+
+        Map<String, dynamic> studentsMap = value['students'] ?? {};
+        List<String> studentIds = studentsMap.entries
+            .where((entry) => entry.value == true)
+            .map((entry) => entry.key.toString())
+            .toList();
+
+        List<String> studentDetails = [];
+        for (var studentId in studentIds) {
+          DatabaseEvent studentSnapshot =
+          await databaseReference.child('users').child(studentId).once();
+          Map<dynamic, dynamic> studentData =
+          studentSnapshot.snapshot.value as Map<dynamic, dynamic>;
+
+          String studentName = studentData["fio"];
+          studentDetails.add(studentName);
+        }
+        print(studentDetails);
+
+        CourseMore courseMore = CourseMore(
+          students: studentDetails,
+          heading: courseName,
+          count: studentDetails.length,
           max: Findcourses["max"],
           cabinet: Findcourses["cabinet"],
           teacher: Findcourses["teacher"],
@@ -131,11 +183,12 @@ class TeacherCourse extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: GestureDetector(
         onTap: ()async {
-          CourseMore result = await FindCourse(heading, razdel);
+          CourseMore result = await FindCourseTeach(heading, razdel);
           showDialog(
               context: context,
               builder: (BuildContext context) {
                 return CourseInfoDialog(
+                  students: result.students,
                   topicName: "",
                   courseName: heading,
                   count: result.count,
@@ -179,10 +232,12 @@ class CourseMore{
   final String teacher;
   final String cabinet;
   final String razdel;
+  final List<String> students;
   CourseMore({required this.heading, required this.count,
     required this.max,
     required this.cabinet,
     required this.teacher,
     required this.topicName,
-    required this.razdel});
+    required this.razdel,
+  required this.students});
 }

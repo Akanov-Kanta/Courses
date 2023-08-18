@@ -14,13 +14,15 @@ class CourseInfoDialog extends StatefulWidget {
       required this.max,
       required this.cabinet,
       required this.teacher,
-      required this.topicName, required this.razdel});
+      required this.topicName, required this.razdel,
+      required this.students});
   final String courseName;
   final String teacher;
   final String cabinet;
   final int max, count;
   final String topicName;
   final String razdel;
+  final List<String> students;
 
   @override
   State<CourseInfoDialog> createState() => _CourseInfoDialogState();
@@ -182,6 +184,22 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
     super.initState();
     myMethod(); // Вызываем myMethod при инициализации виджета
   }
+  Future<void> deleteStudentFromCourse(String studentName, String courseName) async {
+    final databaseReference = FirebaseDatabase.instance.reference();
+
+    // Search for the student's UID based on their name
+    final studentSnapshot = await databaseReference.child("users")
+        .orderByChild("fio")
+        .equalTo(studentName)
+        .once();
+
+    if (studentSnapshot.snapshot.value != null) {
+      final studentUid = (studentSnapshot.snapshot.value as Map<dynamic, dynamic>).keys.first;
+      print(courseName);
+      await databaseReference.child("courses").child(courseName).child("students").child(studentUid).remove();
+      await databaseReference.child("users").child(studentUid).child("courses").child(widget.razdel == "1 курс/2 курс" ? "курсы" : widget.razdel == "circle"?"Кружки":"Секция").remove();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +336,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                           ),
                         ),
                         SizedBox(
-                          height: 180,
+                          height: 130,
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             children: [
@@ -491,7 +509,59 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                                   ),
                                 );
                               }
-                            }),
+                            }
+                            ),
+                        if (userRole == Roles.teacher)
+                          Align(
+                            alignment: AlignmentDirectional(-1, 0),
+                            child: Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(33, 10, 70, 0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Список студентов',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                  Column(
+
+                                    children: widget.students.map((studentName) {
+                                      return Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                                        child: Align(
+                                          alignment: AlignmentDirectional.centerStart,
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  studentName,
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              IconButton(
+                                                icon: Icon(Icons.delete),
+                                                onPressed: () async {
+                                                  await deleteStudentFromCourse(studentName, widget.courseName);
+                                                  setState(() {
+                                                    widget.students.remove(studentName);
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
