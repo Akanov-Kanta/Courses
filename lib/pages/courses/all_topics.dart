@@ -152,7 +152,7 @@ class TopicTile extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                      description=="circle"?"Кружок":description=="course"?"Курс 1/2":"Секция",
+                      description,
                     style: TextStyle(color: Color(0xFF4838D1), fontSize: 15),
                   ),
                 ],

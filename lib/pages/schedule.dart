@@ -150,11 +150,50 @@ class _ScheduleState extends State<Schedule> {
                             });
                           });
                         }
-                        return weekdaySchedule.isEmpty ? Center(child: Text('Нет курсов'),) : ListView(
-                          physics: BouncingScrollPhysics(),
-                          padding: EdgeInsets.all(10.0),
-                          children: weekdaySchedule,
-                        );
+                        weekdaySchedule.sort((a, b) {
+                          List<String> aRange = a.time.split('-');
+                          List<String> bRange = b.time.split('-');
+
+                          List<String> aFromStr = aRange[0].split(':');
+                          List<String> aToStr = aRange[1].split(':');
+                          List<String> bFromStr = bRange[0].split(':');
+                          List<String> bToStr = bRange[1].split(':');
+
+                          double aFrom = double.parse(aFromStr[0]) +
+                              double.parse(aFromStr[1]) / 60;
+                          double aTo = double.parse(aToStr[0]) +
+                              double.parse(aToStr[1]) / 60;
+                          double bFrom = double.parse(bFromStr[0]) +
+                              double.parse(bFromStr[1]) / 60;
+                          double bTo = double.parse(bToStr[0]) +
+                              double.parse(bToStr[1]) / 60;
+                          /*TimeOfDay aTo = TimeOfDay(
+                              hour: int.parse(aToStr[0]),
+                              minute: int.parse(aToStr[1]));
+                          TimeOfDay bFrom = TimeOfDay(
+                              hour: int.parse(bFromStr[0]),
+                              minute: int.parse(bFromStr[1]));
+                          TimeOfDay bTo = TimeOfDay(
+                              hour: int.parse(bToStr[0]),
+                              minute: int.parse(bToStr[1]));*/
+                          print(aFrom);print(aTo);print(bFrom);print(bTo);
+
+                          if(aFrom < bFrom) return -1;
+                          if(aFrom > bFrom) return 1;
+                          if(aTo < bTo) return -1;
+                          if(aTo > bTo) return 1;
+
+                          return 0;
+                        });
+                        return weekdaySchedule.isEmpty
+                            ? Center(
+                                child: Text('Нет курсов'),
+                              )
+                            : ListView(
+                                physics: BouncingScrollPhysics(),
+                                padding: EdgeInsets.all(10.0),
+                                children: weekdaySchedule,
+                              );
                       });
                 }),
           ),
