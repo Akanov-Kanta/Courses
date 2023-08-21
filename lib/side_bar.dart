@@ -257,7 +257,7 @@ class _SidebarState extends State<Sidebar> {
                           if (!snapshot.hasData ||
                               snapshot.data?.snapshot.value == null) {
                             return Center(
-                              child: Text("Нет данных"),
+                              child: Text("Нет курсов"),
                             );
                           }
 

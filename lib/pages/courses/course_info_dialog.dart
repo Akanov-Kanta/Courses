@@ -14,7 +14,8 @@ class CourseInfoDialog extends StatefulWidget {
       required this.max,
       required this.cabinet,
       required this.teacher,
-      required this.topicName, required this.razdel,
+      required this.topicName,
+      required this.razdel,
       required this.students});
   final String courseName;
   final String teacher;
@@ -34,11 +35,15 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
     if (currentUser != null) {
       final myUid = currentUser.uid;
       final databaseReference = FirebaseDatabase.instance.reference();
-      DatabaseEvent dataSnapshot =
-      await databaseReference.child("users").child(myUid).child("courses").once();
+      DatabaseEvent dataSnapshot = await databaseReference
+          .child("users")
+          .child(myUid)
+          .child("courses")
+          .once();
 
       if (dataSnapshot.snapshot.value != null) {
-        Map<String, dynamic> razdels = dataSnapshot.snapshot.value as Map<String, dynamic>;
+        Map<String, dynamic> razdels =
+            dataSnapshot.snapshot.value as Map<String, dynamic>;
         for (String key in razdels.keys) {
           print(key);
           final normalKey = key == 'курсы' ? '1 курс/2 курс' : key;
@@ -58,17 +63,27 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
   Future<void> myMethod() async {
     bool hasData = await hasDataInDocument();
   }
-  void unfollow() async{
+
+  void unfollow() async {
     print("hello");
     final databaseReference = FirebaseDatabase.instance.ref();
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final myUid = currentUser.uid;
 
-      await databaseReference.child("users").child(myUid).child("courses").child(widget.razdel=="1 курс/2 курс"?"курсы":widget.razdel).remove();
+      await databaseReference
+          .child("users")
+          .child(myUid)
+          .child("courses")
+          .child(widget.razdel == "1 курс/2 курс" ? "курсы" : widget.razdel)
+          .remove();
       print(widget.courseName);
-      await databaseReference.child("courses").child(widget.courseName).child("students").child(myUid).remove();
-
+      await databaseReference
+          .child("courses")
+          .child(widget.courseName)
+          .child("students")
+          .child(myUid)
+          .remove();
     }
   }
 
@@ -91,9 +106,15 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         .child("students")
         .once();
     if (courseEvent.snapshot.value != null) {
-      Map<String, dynamic> topicCourses = courseEvent.snapshot.value as Map<String, dynamic>;
+      Map<String, dynamic> topicCourses =
+          courseEvent.snapshot.value as Map<String, dynamic>;
       topicCourses.forEach((key1, key) {
-        databaseReference.child('users').child(key1).child("courses").child(widget.razdel).remove();
+        databaseReference
+            .child('users')
+            .child(key1)
+            .child("courses")
+            .child(widget.razdel)
+            .remove();
       });
     } else {
       print("No data available at the specified path");
@@ -106,7 +127,8 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         .then((DatabaseEvent snapshot) {
       if (snapshot.snapshot.value != null) {
         print(topicName);
-        Map<dynamic, dynamic> data = snapshot.snapshot.value as  Map<dynamic, dynamic>;
+        Map<dynamic, dynamic> data =
+            snapshot.snapshot.value as Map<dynamic, dynamic>;
         data.forEach((key, value) {
           databaseReference
               .child("users")
@@ -114,8 +136,8 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
               .child("courses")
               .child(courseName)
               .remove()
-              .then((value) {
-          }).catchError((error) {
+              .then((value) {})
+              .catchError((error) {
             print("Failed to add topic to user: $error");
           });
         });
@@ -172,7 +194,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         .child("users")
         .child(userId)
         .child("courses")
-        .child(widget.razdel=="1 курс/2 курс"?"курсы":widget.razdel)
+        .child(widget.razdel == "1 курс/2 курс" ? "курсы" : widget.razdel)
         .set(widget.courseName)
         .then((value) {
       print("Topic added to user successfully!");
@@ -185,20 +207,48 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
     super.initState();
     myMethod(); // Вызываем myMethod при инициализации виджета
   }
-  Future<void> deleteStudentFromCourse(String studentName, String courseName) async {
-    final databaseReference = FirebaseDatabase.instance.reference();
+
+  Future<void> deleteStudentFromCourse(
+      String studentName, String courseName) async {
+    final databaseReference = FirebaseDatabase.instance.ref();
 
     // Search for the student's UID based on their name
-    final studentSnapshot = await databaseReference.child("users")
+    final studentSnapshot = await databaseReference
+        .child("users")
         .orderByChild("fio")
         .equalTo(studentName)
         .once();
 
     if (studentSnapshot.snapshot.value != null) {
-      final studentUid = (studentSnapshot.snapshot.value as Map<dynamic, dynamic>).keys.first;
+      final studentUid =
+          (studentSnapshot.snapshot.value as Map<dynamic, dynamic>).keys.first;
       print(courseName);
-      await databaseReference.child("courses").child(courseName).child("students").child(studentUid).remove();
-      await databaseReference.child("users").child(studentUid).child("courses").child(widget.razdel == "1 курс/2 курс" ? "курсы" : widget.razdel == "circle"?"Кружки":"Секция").remove();
+      await databaseReference
+          .child("courses")
+          .child(courseName)
+          .child("students")
+          .child(studentUid)
+          .remove();
+      print('razdel : ${widget.razdel}');
+      Map studentCoursesMap = (await databaseReference
+              .child("users")
+              .child(studentUid)
+              .child("courses")
+              .get())
+          .value as Map;
+      String razdelName = studentCoursesMap.entries
+          .firstWhere((element) => element.value == courseName)
+          .key;
+      /*.child(widget.razdel == "1 курс/2 курс"
+              ? "курсы"
+              : widget.razdel)*/
+      //.remove();
+      await databaseReference
+          .child("users")
+          .child(studentUid)
+          .child("courses")
+          .child(razdelName)
+          .remove();
     }
   }
 
@@ -269,28 +319,29 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                                         ),
                                       ),
                                       Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(5),
-                                          child: SizedBox(
-                                            width: double.infinity,
-                                            child: Text(
-                                              widget.courseName,
-                                              softWrap: true,
-                                              style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontSize: 24,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                          child: Padding(
+                                        padding: EdgeInsets.all(5),
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          child: Text(
+                                            widget.courseName,
+                                            softWrap: true,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                        )
-                                      ), // Добавляем Spacer для занимания свободного пространства
+                                        ),
+                                      )), // Добавляем Spacer для занимания свободного пространства
                                       userRole == Roles.admin
                                           ? IconButton(
                                               icon: Icon(Icons.delete),
                                               onPressed: () {
                                                 deleteCourse(
-                                                    widget.topicName, widget.courseName, widget.teacher);
+                                                    widget.topicName,
+                                                    widget.courseName,
+                                                    widget.teacher);
                                                 Navigator.of(context).pop();
                                               },
                                             )
@@ -324,11 +375,13 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  color: widget.count < widget.max
-                                                      ? TransGreen
-                                                      : TransRed),
+                                                  color:
+                                                      widget.count < widget.max
+                                                          ? TransGreen
+                                                          : TransRed),
                                               child: Center(
-                                                  child: Text('${widget.count}/${widget.max}')))),
+                                                  child: Text(
+                                                      '${widget.count}/${widget.max}')))),
                                     ),
                                   ],
                                 ),
@@ -373,193 +426,230 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                             ],
                           ),
                         ),
-                        if(userRole == Roles.student) StreamBuilder(
-                            stream: FirebaseDatabase.instance
-                                .ref()
-                                .child('users')
-                                .child(FirebaseAuth.instance.currentUser!.uid)
-                                .child('courses')
-                                .onValue,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: Center(
-                                    child: Image.asset('images/PurpleBook.gif'),
-                                  ),
-                                );
-                              }
-                              if (snapshot.data?.snapshot.value == null ||
-                                  !(snapshot.data!.snapshot.value as Map)
-                                      .values
-                                      .contains(widget.courseName)) {
-                                return SizedBox(
-                                  height: 100,
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15),
-                                    child: ElevatedButton(
-                                      onPressed: () async{
-                                        bool hasData = await hasDataInDocument();
-                                        print(hasData);
-                                        if(userRole == Roles.student && widget.count < widget.max && hasData){
-                                          AwesomeDialog(
-                                            context: context,
-                                            dialogType: DialogType.success,
-                                            animType: AnimType.bottomSlide,
-                                            showCloseIcon: false,
-                                            title: 'Успешно!',
-                                            desc: 'Вы успешно записались на курс!!',
-                                            width: 500,
-                                            btnOkText: 'Хорошо',
-                                            btnOkOnPress: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                          ).show();
-                                          signUpForCourses();
-                                        }
-                                        else{
-                                          AwesomeDialog(
-                                            context: context,
-                                            dialogType: DialogType.error,
-                                            animType: AnimType.bottomSlide,
-                                            showCloseIcon: false,
-                                            title: widget.razdel/*=="circle"?"Кружок":widget.razdel=="course"?"Курс 1/2":"Секция"*/,
-                                            desc: 'Вы уже записаны на один из курсов из этого раздела',
-                                            width: 500,
-                                            btnCancelText: 'Хорошо',
-                                            btnCancelOnPress: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                          ).show();
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.symmetric(horizontal: 24),
-                                        backgroundColor: widget.count == widget.max
-                                            ? Colors.grey
-                                            : DarkPurple, // Replace with your desired button color
-                                        elevation: 3,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                        if (userRole == Roles.student)
+                          StreamBuilder(
+                              stream: FirebaseDatabase.instance
+                                  .ref()
+                                  .child('users')
+                                  .child(FirebaseAuth.instance.currentUser!.uid)
+                                  .child('courses')
+                                  .onValue,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return SizedBox(
+                                    height: 100,
+                                    width: 100,
+                                    child: Center(
+                                      child:
+                                          Image.asset('images/PurpleBook.gif'),
+                                    ),
+                                  );
+                                }
+                                if (snapshot.data?.snapshot.value == null ||
+                                    !(snapshot.data!.snapshot.value as Map)
+                                        .values
+                                        .contains(widget.courseName)) {
+                                  return SizedBox(
+                                    height: 100,
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 50.0, vertical: 15),
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          bool hasData =
+                                              await hasDataInDocument();
+                                          print(hasData);
+                                          if (userRole == Roles.student &&
+                                              widget.count < widget.max &&
+                                              hasData) {
+                                            AwesomeDialog(
+                                              context: context,
+                                              dialogType: DialogType.success,
+                                              animType: AnimType.bottomSlide,
+                                              showCloseIcon: false,
+                                              title: 'Успешно!',
+                                              desc:
+                                                  'Вы успешно записались на курс!!',
+                                              width: 500,
+                                              btnOkText: 'Хорошо',
+                                              btnOkOnPress: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ).show();
+                                            signUpForCourses();
+                                          } else {
+                                            AwesomeDialog(
+                                              context: context,
+                                              dialogType: DialogType.error,
+                                              animType: AnimType.bottomSlide,
+                                              showCloseIcon: false,
+                                              title: widget
+                                                  .razdel/*=="circle"?"Кружок":widget.razdel=="course"?"Курс 1/2":"Секция"*/,
+                                              desc:
+                                                  'Вы уже записаны на один из курсов из этого раздела',
+                                              width: 500,
+                                              btnCancelText: 'Хорошо',
+                                              btnCancelOnPress: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ).show();
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 24),
+                                          backgroundColor: widget.count ==
+                                                  widget.max
+                                              ? Colors.grey
+                                              : DarkPurple, // Replace with your desired button color
+                                          elevation: 3,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(
-                                        'Записаться',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w100,
-                                          fontFamily: 'Poppins',
-                                          color: Colors.white,
-                                          fontSize: 16,
+                                        child: Text(
+                                          'Записаться',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w100,
+                                            fontFamily: 'Poppins',
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }
-                              else{
-                                return SizedBox(
-                                  height: 100,
-                                  width: double.infinity,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 50.0, vertical: 15),
-                                    child: ElevatedButton(
-                                      onPressed: userRole == Roles.student
-                                          ? () {
-                                              AwesomeDialog(
-                                                context: context,
-                                                dialogType: DialogType.success,
-                                                animType: AnimType.bottomSlide,
-                                                showCloseIcon: false,
-                                                title: 'Успешно!',
-                                                desc:
-                                                    'Вы успешно отписались от курса!!',
-                                                width: 500,
-                                                btnOkText: 'Хорошо',
-                                                btnOkOnPress: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ).show();
-                                              unfollow();
-
-                                            }
-                                          : null,
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 24),
-                                        backgroundColor: RedNotTrans, // Replace with your desired button color
-                                        elevation: 3,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                  );
+                                } else {
+                                  return SizedBox(
+                                    height: 100,
+                                    width: double.infinity,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 50.0, vertical: 15),
+                                      child: ElevatedButton(
+                                        onPressed: userRole == Roles.student
+                                            ? () {
+                                                AwesomeDialog(
+                                                  context: context,
+                                                  dialogType:
+                                                      DialogType.success,
+                                                  animType:
+                                                      AnimType.bottomSlide,
+                                                  showCloseIcon: false,
+                                                  title: 'Успешно!',
+                                                  desc:
+                                                      'Вы успешно отписались от курса!!',
+                                                  width: 500,
+                                                  btnOkText: 'Хорошо',
+                                                  btnOkOnPress: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ).show();
+                                                unfollow();
+                                              }
+                                            : null,
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 24),
+                                          backgroundColor:
+                                              RedNotTrans, // Replace with your desired button color
+                                          elevation: 3,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(
-                                        'Отписаться',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w100,
-                                          fontFamily: 'Poppins',
-                                          color: Colors.white,
-                                          fontSize: 16,
+                                        child: Text(
+                                          'Отписаться',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w100,
+                                            fontFamily: 'Poppins',
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }
-                            }
-                            ),
+                                  );
+                                }
+                              }),
                         if (userRole == Roles.teacher)
-                          Align(
-                            alignment: AlignmentDirectional(-1, 0),
-                            child: Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(33, 10, 70, 0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Список студентов',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 20,
+                          SizedBox(
+                            height: 150,
+                            child: Align(
+                              alignment: AlignmentDirectional(-1, 0),
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    33, 0, 33, 10),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Список студентов:',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 20,
+                                      ),
                                     ),
-                                  ),
-                                  Column(
-
-                                    children: widget.students.map((studentName) {
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                                        child: Align(
-                                          alignment: AlignmentDirectional.centerStart,
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  studentName,
-                                                  style: TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    fontSize: 16,
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Expanded(
+                                      child: ListView(
+                                        children:
+                                            widget.students.map((studentName) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 5),
+                                            child: Material(
+                                              color: Colors.white,
+                                              elevation: 4,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 5, horizontal: 20),
+                                                child: Align(
+                                                  alignment: AlignmentDirectional
+                                                      .centerStart,
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          studentName,
+                                                          style: TextStyle(
+                                                            fontFamily: 'Poppins',
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                        icon: Icon(Icons.delete),
+                                                        onPressed: () async {
+                                                          await deleteStudentFromCourse(
+                                                              studentName,
+                                                              widget.courseName);
+                                                          setState(() {
+                                                            widget.students
+                                                                .remove(
+                                                                    studentName);
+                                                          });
+                                                        },
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
-                                              IconButton(
-                                                icon: Icon(Icons.delete),
-                                                onPressed: () async {
-                                                  await deleteStudentFromCourse(studentName, widget.courseName);
-                                                  setState(() {
-                                                    widget.students.remove(studentName);
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
