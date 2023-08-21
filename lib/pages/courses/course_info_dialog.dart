@@ -41,7 +41,8 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         Map<String, dynamic> razdels = dataSnapshot.snapshot.value as Map<String, dynamic>;
         for (String key in razdels.keys) {
           print(key);
-          if (key == widget.razdel) {
+          final normalKey = key == 'курсы' ? '1 курс/2 курс' : key;
+          if (normalKey == widget.razdel) {
             print(key);
             return false;
           }
@@ -425,11 +426,11 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                                             dialogType: DialogType.error,
                                             animType: AnimType.bottomSlide,
                                             showCloseIcon: false,
-                                            title: widget.razdel=="circle"?"Кружок":widget.razdel=="course"?"Курс 1/2":"Секция",
+                                            title: widget.razdel/*=="circle"?"Кружок":widget.razdel=="course"?"Курс 1/2":"Секция"*/,
                                             desc: 'Вы уже записаны на один из курсов из этого раздела',
                                             width: 500,
-                                            btnOkText: 'Хорошо',
-                                            btnOkOnPress: () {
+                                            btnCancelText: 'Хорошо',
+                                            btnCancelOnPress: () {
                                               Navigator.of(context).pop();
                                             },
                                           ).show();
