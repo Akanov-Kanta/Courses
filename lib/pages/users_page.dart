@@ -1,3 +1,4 @@
+import 'package:courses/pages/LoginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -129,7 +130,7 @@ class _UsersListPageState extends State<UsersListPage> {
                             .toLowerCase()
                             .contains(searchController.text.toLowerCase())) {
                       return UserTile(
-                        onDelete: () => _deleteUser(user),
+                        onDelete: () => _deleteUser(user,context),
                         name: user.fio,
                         email: user.email,
                         role: user.role,
@@ -147,7 +148,32 @@ class _UsersListPageState extends State<UsersListPage> {
     );
   }
 
-  void _deleteUser(User user) async {
+  void _deleteUser(User user, BuildContext context) async {
+    Map userData = (await FirebaseDatabase.instance
+            .ref()
+            .child("users")
+            .child(user.id)
+            .get())
+        .value as Map;
+    
+    if (userData['role'] == 'Student') {//deleting student from courses
+      List<String> studentCourses =
+          (userData['courses'] as Map).values.toList().cast();
+      final dref = FirebaseDatabase.instance.ref();
+      studentCourses.forEach((element) {
+        dref
+            .child('courses')
+            .child(element)
+            .child('students')
+            .child(user.id)
+            .remove()
+            .then((value) => print('deleted ${user.id} from $element'));
+      });
+    }else if(userData['role'] == 'Teacher' && userData['courses'] != null){
+      //запрет удаления учителя с курсами 
+      SnackBarService.showSnackBar(context, 'Учитель имеет курсы под руководством', true);
+      return;
+    }
     // Delete from Firebase Realtime Database
     FirebaseDatabase.instance
         .ref()

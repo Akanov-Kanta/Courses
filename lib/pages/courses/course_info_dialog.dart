@@ -113,7 +113,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
             .child('users')
             .child(key1)
             .child("courses")
-            .child(widget.razdel)
+            .child(widget.razdel == '1 курс/2 курс' ? 'курсы' : widget.razdel)
             .remove();
       });
     } else {

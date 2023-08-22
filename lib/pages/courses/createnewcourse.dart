@@ -26,7 +26,7 @@ class _CreateNewCourseState extends State<CreateNewCourse> {
     'Вторник',
     'Среда',
     'Четверг',
-    ' Пятница',
+    'Пятница',
     'Суббота',
     'Воскресенье'
   ];

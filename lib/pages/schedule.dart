@@ -135,7 +135,7 @@ class _ScheduleState extends State<Schedule> {
                           userCoursesData.addAll({element: data![element]});
                         });
                         List<ScheduleTile> weekdaySchedule = [];
-                        if (userCoursesData != null) {
+                        if (userCoursesData.isNotEmpty) {
                           userCoursesData.forEach((key, value) {
                             final val = value as Map;
                             final schedule = val['schedule'] as Map;
