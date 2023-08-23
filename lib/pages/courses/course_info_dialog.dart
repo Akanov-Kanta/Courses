@@ -576,7 +576,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                                   );
                                 }
                               }),
-                        if (userRole == Roles.teacher)
+                        if (userRole == Roles.teacher && widget.students.isNotEmpty)
                           SizedBox(
                             height: 150,
                             child: Align(
