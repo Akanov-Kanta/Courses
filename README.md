@@ -124,6 +124,12 @@ The code targets the Flutter of 2023 (Dart 2.19). To build it on Flutter 3.32 / 
 
 Built by [@Akanov-Kanta](https://github.com/Akanov-Kanta), [@RandomnieBukvi](https://github.com/RandomnieBukvi) and [@chillit](https://github.com/chillit).
 
+| Who | Main areas (from the commit history) |
+|---|---|
+| [@Akanov-Kanta](https://github.com/Akanov-Kanta) | Project setup, login screen, dialogs and snackbars, image assets, README |
+| [@RandomnieBukvi](https://github.com/RandomnieBukvi) | Student schedule, section and course creation forms with time slots, responsive desktop layout, Excel export |
+| [@chillit](https://github.com/chillit) | Firebase Auth and role routing, admin user management (create, delete, search), teacher course assignment and student lists, deleting courses and sections |
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
